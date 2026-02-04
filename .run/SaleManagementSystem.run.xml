@@ -4,6 +4,9 @@
       <env name="JWT_EXPIRATION" value="3600000" />
       <env name="JWT_REFRESH_EXPIRATION" value="86400000" />
       <env name="JWT_SECRET" value="12345678901234567890123456789012" />
+      <env name="CLOUD_NAME" value="dnmk3xqy0" />
+      <env name="CLOUD_API_SECRET" value="k7gRpQkf1Xc87ZQPNhmshB17l6I" />
+      <env name="CLOUD_API_KEY" value="374849278972435" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="com.example.demo.DemoApplication" />
     <module name="demo" />
