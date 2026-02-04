@@ -25,13 +25,25 @@ public class DataInitializer implements CommandLineRunner {
 
         // ✅ Tạo role
         Role adminRole = createRole(roleRepository, UserRole.ADMIN);
-        Role customerRole = createRole(roleRepository, UserRole.CUSTOMER);
+        Role customerRole = createRole(roleRepository, UserRole.STAFF);
 
         // ✅ Tạo admin account
-        if (!userRepository.existsByUsername("admin")) {
+        if (!userRepository.existsByEmail("admin@gmail.com")) {
             User adminUser = User.builder()
-                    .username("admin")
+                    .name("admin")
                     .email("admin@gmail.com")
+                    .password(passwordEncoder.encode("123456"))
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .role(adminRole)
+                    .build();
+
+            userRepository.save(adminUser);
+        }
+        if (!userRepository.existsByEmail("staff@gmail.com")) {
+            User adminUser = User.builder()
+                    .name("staff")
+                    .email("staff@gmail.com")
                     .password(passwordEncoder.encode("123456"))
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
