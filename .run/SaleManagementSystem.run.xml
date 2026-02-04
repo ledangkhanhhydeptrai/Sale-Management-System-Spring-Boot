@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SaleManagementSystem" type="Application" factoryName="Application">
+    <envs>
+      <env name="JWT_EXPIRATION" value="3600000" />
+      <env name="JWT_REFRESH_EXPIRATION" value="86400000" />
+      <env name="JWT_SECRET" value="12345678901234567890123456789012" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.example.demo.DemoApplication" />
+    <module name="demo" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
