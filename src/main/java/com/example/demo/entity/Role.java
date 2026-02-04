@@ -18,8 +18,8 @@ import java.util.UUID;
 @NoArgsConstructor
 public class Role {
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Enumerated(EnumType.STRING)
     private UserRole name;
     @OneToMany(mappedBy = "role")
