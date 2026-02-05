@@ -3,13 +3,13 @@ package com.example.demo.exception;
 import org.springframework.http.HttpStatus;
 
 public class BusinessException extends RuntimeException {
-    private final HttpStatus httpStatus;
+    private final HttpStatus status;
 
-    public BusinessException(String message, HttpStatus httpStatus) {
+    public BusinessException(String message, HttpStatus status) {
         super(message);
-        this.httpStatus = httpStatus;
+        this.status = status;
     }
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
+    public HttpStatus getStatus() {
+        return status;
     }
 }

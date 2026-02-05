@@ -1,6 +1,11 @@
 package com.example.demo.service.Implement;
 
+import com.example.demo.Enum.UserRole;
 import com.example.demo.dto.request.CreateRegisterRequest;
+import com.example.demo.entity.Role;
+import com.example.demo.entity.User;
+import com.example.demo.exception.EmailAlreadyExistsException;
+import com.example.demo.exception.UsernameAlreadyExistsException;
 import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.Interface.CloudinaryService;
@@ -8,6 +13,8 @@ import com.example.demo.service.Interface.RegisterService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
@@ -23,12 +30,33 @@ public class RegisterServiceImpl implements RegisterService {
         this.passwordEncoder = passwordEncoder;
         this.cloudinaryService = cloudinaryService;
     }
-   @Override
-    public void registerUser(CreateRegisterRequest request, MultipartFile file){
+    @Override
+    public void registerUser(CreateRegisterRequest request, MultipartFile file) {
         String email = request.getEmail().trim().toLowerCase();
-        String name = request.getName().trim().toLowerCase();
-        if(userRepository.existsByEmail(email)){
-
+        String username = request.getName().trim().toLowerCase();
+        System.out.println("Username: " + username);
+        if (userRepository.existsByEmail(email)) {
+            throw new EmailAlreadyExistsException();
         }
-   }
+
+        Role role = roleRepository.findByName(UserRole.USER)
+                .orElseThrow(() -> new RuntimeException("ROLE_NOT_FOUND"));
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(role);
+        if (file != null && !file.isEmpty()) {
+            try {
+                String image = cloudinaryService.uploadFile(file);
+                user.setImage(image);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Upload file thất bại");
+            }
+        }
+        userRepository.save(user);
+
+    }
 }

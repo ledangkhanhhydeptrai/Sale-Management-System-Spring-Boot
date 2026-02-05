@@ -15,21 +15,27 @@ public class CloudinaryServiceImpl implements CloudinaryService {
 
     private final Cloudinary cloudinary;
 
-    public CloudinaryServiceImpl(@Value("${cloudinary.cloud_name}") String cloudName,
-                                 @Value("${cloudinary.api_key}") String apiKey,
-                                 @Value("${cloudinary.api_secret") String apiSecret) {
-        this.cloudinary = new Cloudinary(ObjectUtils.asMap("cloud_name", cloudName,
+    public CloudinaryServiceImpl(
+            @Value("${cloudinary.cloud_name}") String cloudName,
+            @Value("${cloudinary.api_key}") String apiKey,
+            @Value("${cloudinary.api_secret}") String apiSecret
+    ) {
+        this.cloudinary = new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", cloudName,
                 "api_key", apiKey,
-                "api_secret", apiSecret)
-
-        );
+                "api_secret", apiSecret
+        ));
     }
 
     @Override
     public String uploadFile(MultipartFile file) throws IOException {
-        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "salemanagement",
-                "resource_type", "auto"
-        ));
+        Map uploadResult = cloudinary.uploader().upload(
+                file.getBytes(),
+                ObjectUtils.asMap(
+                        "folder", "salemanagement",
+                        "resource_type", "auto"
+                )
+        );
         return uploadResult.get("secure_url").toString();
     }
 }
