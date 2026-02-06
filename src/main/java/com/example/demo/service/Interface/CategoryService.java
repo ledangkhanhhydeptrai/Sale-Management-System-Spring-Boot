@@ -9,4 +9,7 @@ import java.util.List;
 public interface CategoryService {
     ApiResponse<List<CategoryResponse>> getAllCategory();
     ApiResponse<CategoryResponse> createCategory(CreateCategoryRequest request);
+    ApiResponse<CategoryResponse> getCategoryById(Long id);
+    ApiResponse<CategoryResponse> updateCategoryById(Long id, CreateCategoryRequest request);
+    ApiResponse<Void> deleteCategoryById(Long id);
 }

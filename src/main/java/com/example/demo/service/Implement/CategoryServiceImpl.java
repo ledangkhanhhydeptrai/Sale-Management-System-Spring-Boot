@@ -35,6 +35,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public ApiResponse<CategoryResponse> getCategoryById(Long id) {
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category Not Found"));
+        CategoryResponse response = categoryMapper.toCategory(category);
+        return ApiResponse.<CategoryResponse>builder()
+                .status(200)
+                .message("Get the category successfully")
+                .data(response)
+                .build();
+    }
+
+    @Override
     public ApiResponse<CategoryResponse> createCategory(CreateCategoryRequest request) {
         Category category = new Category();
         category.setName(request.getName());
@@ -44,6 +55,30 @@ public class CategoryServiceImpl implements CategoryService {
                 .status(200)
                 .message("Create Category Successfully")
                 .data(categoryResponse)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<CategoryResponse> updateCategoryById(Long id, CreateCategoryRequest request) {
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category Not Found"));
+        category.setName(request.getName());
+        Category savedCategory = categoryRepository.save(category);
+        CategoryResponse categoryResponse = categoryMapper.toCategory(savedCategory);
+        return ApiResponse.<CategoryResponse>builder()
+                .status(200)
+                .message("Update Category Successfully")
+                .data(categoryResponse)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Void> deleteCategoryById(Long id) {
+        Category category = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category Not Found"));
+        categoryRepository.delete(category);
+        return ApiResponse.<Void>builder()
+                .status(200)
+                .message("Delete Category Successfully")
+                .data(null)
                 .build();
     }
 }

@@ -16,5 +16,6 @@ public class Favorites {
     private Long id;
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
-
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Product product;
 }

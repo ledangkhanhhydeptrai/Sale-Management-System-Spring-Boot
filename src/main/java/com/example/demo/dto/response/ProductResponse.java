@@ -14,4 +14,5 @@ public class ProductResponse {
     private String image;
     private String name;
     private CategoryResponse category;
+    private Integer quantity;
 }

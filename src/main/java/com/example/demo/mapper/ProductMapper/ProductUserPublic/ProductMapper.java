@@ -24,6 +24,7 @@ public class ProductMapper {
                 .image(product.getImage())
                 .price(product.getPrice())
                 .description(product.getDescription())
+                .quantity(product.getQuantity())
                 .category(categoryName)
                 .build();
     }

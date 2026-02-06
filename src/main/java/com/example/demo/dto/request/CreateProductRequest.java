@@ -15,5 +15,6 @@ public class CreateProductRequest {
     private String description;
     private StockStatus stockStatus;
     private ProductStatus status;
+    private Integer quantity;
     private Long categoryId;
 }

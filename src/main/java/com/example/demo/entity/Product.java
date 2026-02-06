@@ -33,7 +33,8 @@ public class Product {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ProductStatus status;
-
+    @Column(name = "quantity")
+    private Integer quantity;
     @Enumerated(EnumType.STRING)
     @Column(name = "stock")
     private StockStatus stockStatus;
