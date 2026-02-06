@@ -40,4 +40,9 @@ public class ProductController {
     public ResponseEntity<ApiResponse<ProductResponseAdmin>> createProduct(@ModelAttribute @RequestBody CreateProductRequest request) {
         return ResponseEntity.ok(productService.createProduct(request, request.getFile()));
     }
+
+    @GetMapping("/public/product/{id}")
+    public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductResponseById(id));
+    }
 }

@@ -88,4 +88,16 @@ public class ProductServiceImpl implements ProductService {
                 .data(productResponseAdmin)
                 .build();
     }
+
+    @Override
+    public ApiResponse<ProductResponse> getProductResponseById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PRODUCT_NOT_FOUND"));
+        ProductResponse productResponse = productMapper.toProductResponse(product);
+        return ApiResponse.<ProductResponse>builder()
+                .status(200)
+                .message("Get the product successfully")
+                .data(productResponse)
+                .build();
+    }
 }
