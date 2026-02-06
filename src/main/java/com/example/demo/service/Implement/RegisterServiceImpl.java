@@ -30,6 +30,7 @@ public class RegisterServiceImpl implements RegisterService {
         this.passwordEncoder = passwordEncoder;
         this.cloudinaryService = cloudinaryService;
     }
+
     @Override
     public void registerUser(CreateRegisterRequest request, MultipartFile file) {
         String email = request.getEmail().trim().toLowerCase();
@@ -37,6 +38,8 @@ public class RegisterServiceImpl implements RegisterService {
         System.out.println("Username: " + username);
         if (userRepository.existsByEmail(email)) {
             throw new EmailAlreadyExistsException();
+        } else if (userRepository.existsByName(username)) {
+            throw new UsernameAlreadyExistsException();
         }
 
         Role role = roleRepository.findByName(UserRole.USER)
