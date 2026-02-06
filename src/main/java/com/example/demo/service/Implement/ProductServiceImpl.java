@@ -61,6 +61,17 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ApiResponse<ProductResponseAdmin> getProductByIdForAdmin(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product Not Found"));
+        ProductResponseAdmin responseAdmin = productMapperAdmin.toProductResponseAdmin(product);
+        return ApiResponse.<ProductResponseAdmin>builder()
+                .status(200)
+                .message("Get the product successfully")
+                .data(responseAdmin)
+                .build();
+    }
+
+    @Override
     public ApiResponse<ProductResponseAdmin> createProduct(CreateProductRequest request, MultipartFile file) {
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("CATEGORY_NOT_FOUND"));
@@ -98,6 +109,44 @@ public class ProductServiceImpl implements ProductService {
                 .status(200)
                 .message("Get the product successfully")
                 .data(productResponse)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<ProductResponseAdmin> updateProductResponseById(Long id, CreateProductRequest request, MultipartFile file) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PRODUCT_NOT_FOUND"));
+        product.setPrice(request.getPrice());
+        product.setDescription(request.getDescription());
+        product.setStatus(request.getStatus());
+        product.setStockStatus(request.getStockStatus());
+        if (file != null && !file.isEmpty()) {
+            try {
+                String image = cloudinaryService.uploadFile(file);
+                product.setImage(image);
+            } catch (IOException e) {
+                e.printStackTrace();
+                throw new RuntimeException("Upload file thất bại");
+            }
+        }
+        Product savedProduct = productRepository.save(product);
+        ProductResponseAdmin productResponseAdmin = productMapperAdmin.toProductResponseAdmin(savedProduct);
+        return ApiResponse.<ProductResponseAdmin>builder()
+                .status(200)
+                .message("Cập nhật product thành công")
+                .data(productResponseAdmin)
+                .build();
+    }
+
+    @Override
+    public ApiResponse<Void> deleteProductResponseById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("PRODUCT_NOT_FOUND"));
+        productRepository.delete(product);
+        return ApiResponse.<Void>builder()
+                .status(200)
+                .message("Xóa sản phẩm thành công")
+                .data(null)
                 .build();
     }
 }

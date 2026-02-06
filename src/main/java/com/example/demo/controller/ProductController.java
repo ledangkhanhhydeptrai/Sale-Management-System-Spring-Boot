@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -44,5 +43,22 @@ public class ProductController {
     @GetMapping("/public/product/{id}")
     public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductResponseById(id));
+    }
+
+    @GetMapping("/product/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<ProductResponseAdmin>> getProductByIdForAdmin(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductByIdForAdmin(id));
+    }
+
+    @PutMapping(value = "/product/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<ProductResponseAdmin>> updateProductById(@PathVariable Long id, @ModelAttribute @RequestBody CreateProductRequest request) {
+        return ResponseEntity.ok(productService.updateProductResponseById(id, request, request.getFile()));
+    }
+    @DeleteMapping("/product/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deleteProductById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.deleteProductResponseById(id));
     }
 }

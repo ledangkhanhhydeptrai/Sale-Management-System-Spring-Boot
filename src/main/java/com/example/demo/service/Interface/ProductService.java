@@ -13,4 +13,7 @@ public interface ProductService {
     ApiResponse<List<ProductResponseAdmin>> getAllProductForAdmin();
     ApiResponse<ProductResponseAdmin> createProduct(CreateProductRequest request, MultipartFile file);
     ApiResponse<ProductResponse> getProductResponseById(Long id);
+    ApiResponse<ProductResponseAdmin> getProductByIdForAdmin(Long id);
+    ApiResponse<ProductResponseAdmin> updateProductResponseById(Long id, CreateProductRequest request, MultipartFile file);
+    ApiResponse<Void> deleteProductResponseById(Long id);
 }
