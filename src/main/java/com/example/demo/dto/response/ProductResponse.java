@@ -5,11 +5,13 @@ import com.example.demo.Enum.StockStatus;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class ProductResponse {
     private Long id;
-    private Double price;
+    private BigDecimal price;
     private String description;
     private String image;
     private String name;

@@ -23,7 +23,7 @@ public class OrderItem {
     @JoinColumn(name = "product_id")
     private Product product;
     @Column(name = "quantity")
-    private Integer quantity;
+    private Long quantity;
     @Column(name = "price")
     private BigDecimal price;
 }

@@ -28,4 +28,7 @@ public class Order {
     private OrderStatus orderStatus;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

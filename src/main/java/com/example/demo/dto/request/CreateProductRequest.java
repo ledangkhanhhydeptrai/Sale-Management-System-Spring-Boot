@@ -6,11 +6,13 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class CreateProductRequest {
     private String name;
-    private Double price;
+    private BigDecimal price;
     private MultipartFile file;
     private String description;
     private StockStatus stockStatus;

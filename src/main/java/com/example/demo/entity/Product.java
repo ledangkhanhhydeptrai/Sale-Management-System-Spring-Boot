@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "products")
 @Getter
@@ -22,7 +24,7 @@ public class Product {
     @Column(name = "name")
     private String name;
     @Column(name = "price")
-    private Double price;
+    private BigDecimal price;
     @Column(name = "description")
     private String description;
     @Column(name = "image")

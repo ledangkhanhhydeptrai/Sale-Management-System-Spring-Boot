@@ -3,11 +3,13 @@ package com.example.demo.dto.response;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class FavouritesResponse {
     private Long productId;
     private String name;
-    private Double price;
+    private BigDecimal price;
     private String image;
 }
