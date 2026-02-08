@@ -16,7 +16,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info().title("Sale Management System API")
                         .version("1.0")
-                        .description("Hệ thống quản lý bán hàng tất cả các thiết bị")
+                        .description("Hệ thống quản lý bán hàng đa hàng")
                 )
                 .components(new io.swagger.v3.oas.models.Components()
                         .addSecuritySchemes(SECURITY_SCHEME_NAME, new SecurityScheme()
