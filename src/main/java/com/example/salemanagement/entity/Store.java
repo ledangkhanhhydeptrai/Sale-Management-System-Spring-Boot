@@ -1,0 +1,30 @@
+package com.example.salemanagement.entity;
+
+import com.example.salemanagement.Enum.StoreStatus;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "store")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Store {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "code")
+    private String code;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private StoreStatus status;
+    @Column(name = "plan")
+    private String plan;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+}
