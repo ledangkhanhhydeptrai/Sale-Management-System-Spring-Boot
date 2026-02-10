@@ -3,18 +3,24 @@ package com.example.demo.service.Implement;
 import com.example.demo.Enum.UserRole;
 import com.example.demo.dto.request.CreateRegisterRequest;
 import com.example.demo.entity.Role;
+import com.example.demo.entity.Store;
 import com.example.demo.entity.User;
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.EmailAlreadyExistsException;
 import com.example.demo.exception.UsernameAlreadyExistsException;
 import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.StoreRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.Interface.CloudinaryService;
 import com.example.demo.service.Interface.RegisterService;
+import com.example.demo.utils.SlugUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class RegisterServiceImpl implements RegisterService {
@@ -23,43 +29,86 @@ public class RegisterServiceImpl implements RegisterService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
+    private final StoreRepository storeRepository;
 
-    public RegisterServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, CloudinaryService cloudinaryService) {
+    public RegisterServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, CloudinaryService cloudinaryService, StoreRepository storeRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.cloudinaryService = cloudinaryService;
+        this.storeRepository = storeRepository;
     }
 
     @Override
-    public void registerUser(CreateRegisterRequest request, MultipartFile file) {
-        String email = request.getEmail().trim().toLowerCase();
-        String username = request.getName().trim().toLowerCase();
-        System.out.println("Username: " + username);
-        if (userRepository.existsByEmail(email)) {
-            throw new EmailAlreadyExistsException();
-        } else if (userRepository.existsByName(username)) {
-            throw new UsernameAlreadyExistsException();
+    public void registerUser(CreateRegisterRequest request) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        String email = request.getEmail() == null ? null : request.getEmail().trim().toLowerCase();
+        String username = request.getName() == null ? null : request.getName().trim().toLowerCase();
+        MultipartFile file = request.getFile();
+
+        // ===== Validate email =====
+        if (email == null || email.isBlank() || email.equals("string")) {
+            errors.put("email", "Email không được để trống");
+        } else if (userRepository.existsByEmail(email)) {
+            errors.put("email", "Email đã tồn tại");
         }
 
-        Role role = roleRepository.findByName(UserRole.USER)
+        // ===== Validate username =====
+        if (username == null || username.isBlank() || username.equals("string")) {
+            errors.put("name", "Tên người dùng không được để trống");
+        } else if (userRepository.existsByName(username)) {
+            errors.put("name", "Tên người dùng đã tồn tại");
+        }
+
+        // ===== Validate password =====
+        if (request.getPassword() == null
+                || request.getPassword().isBlank()
+                || request.getPassword().equals("string")) {
+            errors.put("password", "Mật khẩu không hợp lệ");
+        }
+
+        // Nếu có lỗi → throw 1 lần
+        if (!errors.isEmpty()) {
+            throw new BadRequestException("Dữ liệu không hợp lệ", errors);
+        }
+
+        // ===== Store =====
+        String storeCode = SlugUtil.toSlug(request.getStoreName());
+        if (storeRepository.existsByCode(storeCode)) {
+            storeCode = storeCode + "-" + System.currentTimeMillis();
+        }
+
+        Store store = storeRepository.save(
+                Store.builder()
+                        .name(request.getStoreName())
+                        .code(storeCode)
+                        .plan("FREE")
+                        .build()
+        );
+
+        // ===== Role =====
+        Role role = roleRepository.findByName(UserRole.CUSTOMER)
                 .orElseThrow(() -> new RuntimeException("ROLE_NOT_FOUND"));
 
+        // ===== User =====
         User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
+        user.setName(username);
+        user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
+        user.setStore(store);
+
+        // ===== Upload image =====
         if (file != null && !file.isEmpty()) {
             try {
                 String image = cloudinaryService.uploadFile(file);
                 user.setImage(image);
             } catch (IOException e) {
-                e.printStackTrace();
                 throw new RuntimeException("Upload file thất bại");
             }
         }
         userRepository.save(user);
-
     }
 }

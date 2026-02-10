@@ -25,21 +25,17 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public ApiResponse<LoginResponse> login(CreateLoginRequest request) {
+    public LoginResponse login(CreateLoginRequest request) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Sai email hoặc mật khẩu");
         }
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("Email không tồn tại"));
-        LoginResponse response = LoginResponse.builder()
+        String jwt = jwtUtil.generateToken(user.getEmail());
+        return LoginResponse.builder()
                 .role(user.getRole().getName())
-                .token(jwtUtil.generateToken(user.getEmail()))
-                .build();
-        return ApiResponse.<LoginResponse>builder()
-                .status(200)
-                .message("Đăng nhập thành công")
-                .data(response)
+                .token(jwt)
                 .build();
     }
 }

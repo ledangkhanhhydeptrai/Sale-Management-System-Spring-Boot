@@ -2,8 +2,10 @@ package com.example.demo.config;
 
 import com.example.demo.Enum.UserRole;
 import com.example.demo.entity.Role;
+import com.example.demo.entity.Store;
 import com.example.demo.entity.User;
 import com.example.demo.repository.RoleRepository;
+import com.example.demo.repository.StoreRepository;
 import com.example.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -19,13 +21,19 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final StoreRepository storeRepository;
 
     @Override
     public void run(String... args) {
-
+        Store store = Store.builder()
+                .name("Demo Store")
+                .code("demo-store")
+                .plan("FREE")
+                .build();
+        store = storeRepository.save(store);
         // ✅ Tạo role
         Role adminRole = createRole(roleRepository, UserRole.ADMIN);
-        Role userRole = createRole(roleRepository, UserRole.USER);
+        Role userRole = createRole(roleRepository, UserRole.CUSTOMER);
         Role staffRole = createRole(roleRepository, UserRole.STAFF);
         // ✅ Tạo admin account
         if (!userRepository.existsByEmail("admin@gmail.com")) {
@@ -36,6 +44,7 @@ public class DataInitializer implements CommandLineRunner {
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .role(adminRole)
+                    .store(store)
                     .build();
 
             userRepository.save(adminUser);
@@ -48,6 +57,7 @@ public class DataInitializer implements CommandLineRunner {
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .role(adminRole)
+                    .store(store)
                     .build();
 
             userRepository.save(adminUser);
