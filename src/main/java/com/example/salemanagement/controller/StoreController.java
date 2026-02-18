@@ -1,14 +1,17 @@
 package com.example.salemanagement.controller;
 
 import com.example.salemanagement.dto.request.CreateStoreRequest;
+import com.example.salemanagement.dto.request.UpdateStoreRequest;
 import com.example.salemanagement.dto.response.StoreResponse;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.StoreService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,9 +30,14 @@ public class StoreController {
         return ResponseEntity.ok(storeService.getMyStore());
     }
 
+    @PostMapping
+    public ResponseEntity<ApiResponse<StoreResponse>> createStore(@RequestBody CreateStoreRequest request) {
+        return ResponseEntity.ok(storeService.createStore(request));
+    }
+
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<StoreResponse>> updateStore(@PathVariable Long id, @ModelAttribute @RequestBody CreateStoreRequest request) {
+    public ResponseEntity<ApiResponse<StoreResponse>> updateStore(@PathVariable Long id, @ModelAttribute @RequestBody UpdateStoreRequest request) {
         return ResponseEntity.ok(storeService.updateStoreStatus(id, request));
     }
 }

@@ -1,5 +1,6 @@
 package com.example.salemanagement.entity;
 
+import com.example.salemanagement.Enum.PlanType;
 import com.example.salemanagement.Enum.StoreStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,7 +25,8 @@ public class Store {
     @Column(name = "status")
     private StoreStatus status;
     @Column(name = "plan")
-    private String plan;
+    @Enumerated(EnumType.STRING)
+    private PlanType plan;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

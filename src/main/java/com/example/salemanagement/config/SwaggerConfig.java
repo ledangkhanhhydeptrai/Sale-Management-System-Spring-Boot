@@ -14,7 +14,7 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("Sale Management System API")
+                .info(new Info().title("Sales Management System API")
                         .version("1.0")
                         .description("Hệ thống quản lý bán hàng đa hàng")
                 )

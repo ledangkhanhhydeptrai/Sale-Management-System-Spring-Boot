@@ -44,7 +44,7 @@ public class User {
     @Column(name = "status")
     private UserStatus status;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "store_id", nullable = true)
     private Store store;
     @ManyToOne
     @JoinColumn(name = "warehouse_id")

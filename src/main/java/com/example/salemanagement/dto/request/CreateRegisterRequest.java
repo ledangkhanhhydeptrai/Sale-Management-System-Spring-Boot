@@ -20,7 +20,6 @@ public class CreateRegisterRequest {
     @NotBlank(message = "Mật khẩu không được để trống")
 
     private String password;
-    private String storeName;
 
     private MultipartFile file;
 }
