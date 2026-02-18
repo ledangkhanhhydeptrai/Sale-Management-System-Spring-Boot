@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
     boolean existsByCode(String code);
-    Optional<Store> findById(Long storeId);
+    Optional<Store> findByCode(String code);
 }
