@@ -12,7 +12,6 @@ import com.example.salemanagement.repository.UserRepository;
 import com.example.salemanagement.service.Interface.CloudinaryService;
 import com.example.salemanagement.service.Interface.RegisterService;
 import com.example.salemanagement.service.Interface.StoreService;
-import com.example.salemanagement.utils.SlugUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,15 +27,13 @@ public class RegisterServiceImpl implements RegisterService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final CloudinaryService cloudinaryService;
-    private final StoreRepository storeRepository;
     private final StoreService storeService;
 
-    public RegisterServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, CloudinaryService cloudinaryService, StoreRepository storeRepository, StoreService storeService) {
+    public RegisterServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, CloudinaryService cloudinaryService, StoreService storeService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.cloudinaryService = cloudinaryService;
-        this.storeRepository = storeRepository;
         this.storeService = storeService;
     }
 

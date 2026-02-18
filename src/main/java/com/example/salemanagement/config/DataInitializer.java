@@ -26,14 +26,17 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Store store = Store.builder()
-                .name("Demo Store")
-                .code("demo-store")
-                .plan("FREE")
-                .status(StoreStatus.ACTIVE)
-                .createdAt(LocalDateTime.now())
-                .build();
-        store = storeRepository.save(store);
+        Store store = null;
+        if (!storeRepository.existsByCode("demo-store")) {
+            store = Store.builder()
+                    .name("Demo Store")
+                    .code("demo-store")
+                    .plan("FREE")
+                    .status(StoreStatus.ACTIVE)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            storeRepository.save(store);
+        }
         // ✅ Tạo role
         Role adminRole = createRole(roleRepository, UserRole.ADMIN);
         Role userRole = createRole(roleRepository, UserRole.CUSTOMER);

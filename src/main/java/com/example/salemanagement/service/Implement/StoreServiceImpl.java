@@ -45,7 +45,7 @@ public class StoreServiceImpl implements StoreService {
                 .name(storeName.trim())
                 .code(storeCode)
                 .plan("FREE")
-                .status(StoreStatus.ACTIVE)
+                .status(StoreStatus.PENDING)
                 .createdAt(LocalDateTime.now())
                 .build();
 
@@ -71,6 +71,7 @@ public class StoreServiceImpl implements StoreService {
                 .data(storeMapper.storeToStoreResponse(store))
                 .build();
     }
+
 
     @Override
     public ApiResponse<StoreResponse> updateStoreStatus(Long storeId, CreateStoreRequest request) {

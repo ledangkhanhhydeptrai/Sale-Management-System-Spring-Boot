@@ -26,7 +26,14 @@ public class Product {
     @Column(name = "price")
     private BigDecimal price;
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private ProductStatus status;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.status = ProductStatus.ACTIVE;
+    }
 }
