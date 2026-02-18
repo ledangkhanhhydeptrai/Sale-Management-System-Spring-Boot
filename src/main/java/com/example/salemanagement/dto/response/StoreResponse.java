@@ -20,4 +20,5 @@ public class StoreResponse {
     private PlanType plan;
     private StoreStatus status;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

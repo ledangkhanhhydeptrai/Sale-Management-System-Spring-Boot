@@ -17,6 +17,7 @@ public class StoreMapper {
                 .plan(store.getPlan())
                 .status(store.getStatus())
                 .createdAt(store.getCreatedAt())
+                .updatedAt(store.getUpdatedAt())
                 .build();
     }
 }
