@@ -63,7 +63,20 @@ public class DataInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("123456"))
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
-                    .role(adminRole)
+                    .role(staffRole)
+                    .store(store)
+                    .build();
+
+            userRepository.save(adminUser);
+        }
+        if (!userRepository.existsByEmail("warehouse@gmail.com")) {
+            User adminUser = User.builder()
+                    .name("warehouseManager")
+                    .email("warehouseManager@gmail.com")
+                    .password(passwordEncoder.encode("123456"))
+                    .createdAt(LocalDateTime.now())
+                    .updatedAt(LocalDateTime.now())
+                    .role(wareHouseRole)
                     .store(store)
                     .build();
 
