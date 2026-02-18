@@ -35,6 +35,7 @@ public class DataInitializer implements CommandLineRunner {
                             .plan(PlanType.FREE)
                             .status(StoreStatus.ACTIVE)
                             .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
                             .build();
                     return storeRepository.save(newStore);
                 });

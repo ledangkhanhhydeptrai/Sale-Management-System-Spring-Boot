@@ -56,6 +56,7 @@ public class StoreServiceImpl implements StoreService {
         store.setStatus(StoreStatus.PENDING);
         store.setPlan(PlanType.FREE);
         store.setCreatedAt(LocalDateTime.now());
+        store.setUpdatedAt(LocalDateTime.now());
         Store savedStore = storeRepository.save(store);
         user.setStore(savedStore);
         userRepository.save(user);
@@ -100,6 +101,8 @@ public class StoreServiceImpl implements StoreService {
                 .name(updatedStore.getName())
                 .plan(updatedStore.getPlan())
                 .status(updatedStore.getStatus())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
         return ApiResponse.<StoreResponse>builder()
                 .status(200)
