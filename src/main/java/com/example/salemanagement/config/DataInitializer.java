@@ -41,6 +41,7 @@ public class DataInitializer implements CommandLineRunner {
         Role adminRole = createRole(roleRepository, UserRole.ADMIN);
         Role userRole = createRole(roleRepository, UserRole.CUSTOMER);
         Role staffRole = createRole(roleRepository, UserRole.STAFF);
+        Role wareHouseRole = createRole(roleRepository, UserRole.WAREHOUSE_MANAGER);
         // ✅ Tạo admin account
         if (!userRepository.existsByEmail("admin@gmail.com")) {
             User adminUser = User.builder()

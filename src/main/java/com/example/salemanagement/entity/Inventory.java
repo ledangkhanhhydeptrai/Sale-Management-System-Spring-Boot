@@ -28,4 +28,7 @@ public class Inventory {
     private InventoryStatus status;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id")
+    private Warehouse warehouse;
 }
