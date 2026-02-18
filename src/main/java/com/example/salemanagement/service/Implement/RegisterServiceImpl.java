@@ -73,8 +73,6 @@ public class RegisterServiceImpl implements RegisterService {
         }
 
 
-        Store store = storeService.createStore(request.getStoreName());
-
         // ===== Role =====
         Role role = roleRepository.findByName(UserRole.CUSTOMER)
                 .orElseThrow(() -> new RuntimeException("ROLE_NOT_FOUND"));
@@ -85,7 +83,6 @@ public class RegisterServiceImpl implements RegisterService {
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
-        user.setStore(store);
 
         // ===== Upload image =====
         if (file != null && !file.isEmpty()) {

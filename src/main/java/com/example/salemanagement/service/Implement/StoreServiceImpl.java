@@ -1,15 +1,19 @@
 package com.example.salemanagement.service.Implement;
 
+import com.example.salemanagement.Enum.PlanType;
 import com.example.salemanagement.Enum.StoreStatus;
 import com.example.salemanagement.dto.request.CreateStoreRequest;
+import com.example.salemanagement.dto.request.UpdateStoreRequest;
 import com.example.salemanagement.dto.response.StoreResponse;
 import com.example.salemanagement.entity.Store;
 import com.example.salemanagement.entity.User;
 import com.example.salemanagement.exception.BadRequestException;
 import com.example.salemanagement.mapper.StoreMapper.StoreMapper;
 import com.example.salemanagement.repository.StoreRepository;
+import com.example.salemanagement.repository.UserRepository;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.security.UserPrincipal;
+import com.example.salemanagement.service.Interface.AuthService;
 import com.example.salemanagement.service.Interface.StoreService;
 import com.example.salemanagement.utils.SlugUtil;
 import org.springframework.security.core.Authentication;
@@ -24,41 +28,52 @@ import java.util.Map;
 public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
     private final StoreMapper storeMapper;
+    private final UserRepository userRepository;
+    private final AuthService  authService;
 
-    public StoreServiceImpl(StoreRepository storeRepository, StoreMapper storeMapper) {
+    public StoreServiceImpl(StoreRepository storeRepository, StoreMapper storeMapper, UserRepository userRepository, AuthService authService) {
         this.storeRepository = storeRepository;
         this.storeMapper = storeMapper;
+        this.userRepository = userRepository;
+        this.authService = authService;
     }
 
     @Override
-    public Store createStore(String storeName) {
+    public ApiResponse<StoreResponse> createStore(CreateStoreRequest request) {
+        User user = authService.getCurrentUser();
         Map<String, String> errors = new HashMap<>();
-        if (storeName == null || storeName.isBlank()) {
+        if (request.getName() == null || request.getName().isBlank()) {
             errors.put("storeName", "Tên cửa hàng không được để trống");
         }
 
         if (!errors.isEmpty()) {
             throw new BadRequestException("Dữ liệu cửa hàng không hợp lệ", errors);
         }
-        String storeCode = SlugUtil.toSlug(storeName);
-        Store store = Store.builder()
-                .name(storeName.trim())
-                .code(storeCode)
-                .plan("FREE")
-                .status(StoreStatus.PENDING)
-                .createdAt(LocalDateTime.now())
+        String storeCode = SlugUtil.toSlug(request.getName());
+        Store store = new Store();
+        store.setCode(storeCode);
+        store.setName(request.getName());
+        store.setStatus(StoreStatus.PENDING);
+        store.setPlan(PlanType.FREE);
+        store.setCreatedAt(LocalDateTime.now());
+        Store savedStore = storeRepository.save(store);
+        user.setStore(savedStore);
+        userRepository.save(user);
+        StoreResponse response = storeMapper.storeToStoreResponse(savedStore);
+        return ApiResponse.<StoreResponse>builder()
+                .status(200)
+                .message("Create Store Successfully")
+                .data(response)
                 .build();
-
-        return storeRepository.save(store);
     }
 
     @Override
     public ApiResponse<StoreResponse> getMyStore() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        UserPrincipal principal = (UserPrincipal) auth.getPrincipal();
-        User user = principal.getUser();
+        String username = auth.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
 
         Store store = user.getStore();
         if (store == null) {
@@ -74,7 +89,7 @@ public class StoreServiceImpl implements StoreService {
 
 
     @Override
-    public ApiResponse<StoreResponse> updateStoreStatus(Long storeId, CreateStoreRequest request) {
+    public ApiResponse<StoreResponse> updateStoreStatus(Long storeId, UpdateStoreRequest request) {
         Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("STORE_NOT_FOUND"));
         store.setStatus(request.getStoreStatus());
         store.setName(request.getStoreName());

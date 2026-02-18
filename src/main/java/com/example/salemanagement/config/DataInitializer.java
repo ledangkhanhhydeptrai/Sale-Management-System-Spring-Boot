@@ -1,5 +1,6 @@
 package com.example.salemanagement.config;
 
+import com.example.salemanagement.Enum.PlanType;
 import com.example.salemanagement.Enum.StoreStatus;
 import com.example.salemanagement.Enum.UserRole;
 import com.example.salemanagement.entity.Role;
@@ -26,17 +27,17 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        Store store = null;
-        if (!storeRepository.existsByCode("demo-store")) {
-            store = Store.builder()
-                    .name("Demo Store")
-                    .code("demo-store")
-                    .plan("FREE")
-                    .status(StoreStatus.ACTIVE)
-                    .createdAt(LocalDateTime.now())
-                    .build();
-            storeRepository.save(store);
-        }
+        Store store = storeRepository.findByCode("demo-store")
+                .orElseGet(() -> {
+                    Store newStore = Store.builder()
+                            .name("Demo Store")
+                            .code("demo-store")
+                            .plan(PlanType.FREE)
+                            .status(StoreStatus.ACTIVE)
+                            .createdAt(LocalDateTime.now())
+                            .build();
+                    return storeRepository.save(newStore);
+                });
         // ✅ Tạo role
         Role adminRole = createRole(roleRepository, UserRole.ADMIN);
         Role userRole = createRole(roleRepository, UserRole.CUSTOMER);
@@ -69,7 +70,7 @@ public class DataInitializer implements CommandLineRunner {
 
             userRepository.save(adminUser);
         }
-        if (!userRepository.existsByEmail("warehouse@gmail.com")) {
+        if (!userRepository.existsByEmail("warehouseManager@gmail.com")) {
             User adminUser = User.builder()
                     .name("warehouseManager")
                     .email("warehouseManager@gmail.com")
