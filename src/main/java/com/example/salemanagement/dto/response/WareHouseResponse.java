@@ -9,7 +9,7 @@ public class WareHouseResponse {
     private Long id;
     private String address;
     private String name;
-    private Long storeId;
+    private StoreResponse store;
     private String city;
     private String district;
 }
