@@ -1,5 +1,6 @@
 package com.example.salemanagement.mapper.WareHouseMapper;
 
+import com.example.salemanagement.dto.response.StoreResponse;
 import com.example.salemanagement.dto.response.WareHouseResponse;
 import com.example.salemanagement.entity.Warehouse;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,15 @@ public class WareHouseMapper {
                 .name(warehouse.getName())
                 .city(warehouse.getCity())
                 .district(warehouse.getDistrict())
-                .storeId(warehouse.getStore().getId())
+                .store(StoreResponse.builder()
+                        .id(warehouse.getStore().getId())
+                        .name(warehouse.getStore().getName())
+                        .createdAt(warehouse.getStore().getCreatedAt())
+                        .updatedAt(warehouse.getStore().getUpdatedAt())
+                        .code(warehouse.getStore().getCode())
+                        .plan(warehouse.getStore().getPlan())
+                        .status(warehouse.getStore().getStatus())
+                        .build())
                 .address(warehouse.getAddress())
                 .build();
     }
