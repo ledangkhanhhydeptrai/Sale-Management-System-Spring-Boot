@@ -1,6 +1,7 @@
 package com.example.salemanagement.controller;
 
 import com.example.salemanagement.dto.request.CreateWareHouseRequest;
+import com.example.salemanagement.dto.request.UpdateWareHouseRequest;
 import com.example.salemanagement.dto.response.WareHouseResponse;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.WareHouseService;
@@ -36,5 +37,15 @@ public class WareHouseController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<WareHouseResponse>> getWareHouseById(@PathVariable Long id) {
         return ResponseEntity.ok(wareHouseService.getWareHouseById(id));
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ApiResponse<WareHouseResponse>> updateWareHouse(@PathVariable Long id, @RequestBody UpdateWareHouseRequest request) {
+        return ResponseEntity.ok(wareHouseService.updateWareHouse(id, request));
+    }
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> deleteWareHouse(@PathVariable Long id) {
+        return wareHouseService.deleteWarehouse(id);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.salemanagement.entity;
 
+import com.example.salemanagement.Enum.WareHouseStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,5 +39,8 @@ public class Warehouse {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private WareHouseStatus status;
 }
 
