@@ -4,10 +4,11 @@
       <env name="CLOUD_API_KEY" value="374849278972435" />
       <env name="CLOUD_API_SECRET" value="k7gRpQkf1Xc87ZQPNhmshB17l6I" />
       <env name="CLOUD_NAME" value="dnmk3xqy0" />
-      <env name="DB_PASSWORD" value="TsNjMNTCpyNqJNo5zlD33WLs04qurk30" />
+      <env name="DB_NAME" value="salemanagementsystem" />
+      <env name="DB_PASSWORD" value="123456" />
       <env name="DB_SERVER_PORT" value="8080" />
-      <env name="DB_URL" value="jdbc:postgresql://dpg-d6f8ppfgi27c73cp6er0-a.oregon-postgres.render.com:5432/salemanagmentsystem_8dmd?sslmode=require" />
-      <env name="DB_USERNAME" value="khanhhy" />
+      <env name="DB_URL" value="jdbc:postgresql://localhost:5433/salemanagementsystem" />
+      <env name="DB_USERNAME" value="postgres" />
       <env name="JWT_EXPIRATION" value="3600000" />
       <env name="JWT_REFRESH_EXPIRATION" value="86400000" />
       <env name="JWT_SECRET" value="12345678901234567890123456789012" />
