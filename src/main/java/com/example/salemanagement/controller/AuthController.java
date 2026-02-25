@@ -50,8 +50,8 @@ public class AuthController {
         // 2. Set JWT vào HttpOnly Cookie
         ResponseCookie cookie = ResponseCookie.from("access_token", loginResponse.getToken())
                 .httpOnly(true)
-                .secure(false) // true khi deploy HTTPS
-                .sameSite("Strict")
+                .secure(true) // true khi deploy HTTPS
+                .sameSite("None")
                 .path("/")
                 .maxAge(60 * 60)
                 .build();
