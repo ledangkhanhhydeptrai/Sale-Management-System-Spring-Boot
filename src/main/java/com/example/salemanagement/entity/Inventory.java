@@ -24,8 +24,9 @@ public class Inventory {
     private Integer quantity;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    @Column(name = "status")
-    private InventoryStatus status;
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private InventoryStatus status = InventoryStatus.IN_STOCK;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @ManyToOne
