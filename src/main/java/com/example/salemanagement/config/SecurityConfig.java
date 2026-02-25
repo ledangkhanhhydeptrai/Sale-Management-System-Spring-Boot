@@ -44,12 +44,12 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                         .accessDeniedHandler(new CustomAccessDeniedHandler()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/login",
-                                "/api/public/**",
-                                "/api/auth/register",
+                        .requestMatchers(
+                                "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/swagger-ui/**").permitAll()
+                                "/api/auth/**",
+                                "/api/public/**"
+                        ).permitAll()
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().permitAll()
                 )
