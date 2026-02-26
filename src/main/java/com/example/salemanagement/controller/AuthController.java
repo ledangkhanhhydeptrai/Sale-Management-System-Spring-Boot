@@ -40,7 +40,7 @@ public class AuthController {
                         .build());
     }
 
-    @PostMapping(value = "/login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
             @RequestBody CreateLoginRequest request) {
 
