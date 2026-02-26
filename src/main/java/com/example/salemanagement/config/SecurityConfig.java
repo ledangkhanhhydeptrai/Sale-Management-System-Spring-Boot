@@ -53,7 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        System.out.println("SECURITY VERSION V2");
+        System.out.println("SECURITY VERSION V3");
         return http.build();
     }
 
