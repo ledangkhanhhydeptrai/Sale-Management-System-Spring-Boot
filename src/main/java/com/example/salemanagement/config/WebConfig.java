@@ -13,7 +13,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry corsRegistry) {
                 corsRegistry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:4200", "http://localhost:4000")
+                        .allowedOrigins("http://localhost:4200", "http://localhost:4000", "https://sale-management-system-angular.vercel.app/")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowCredentials(true);
             }
