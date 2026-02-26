@@ -53,7 +53,6 @@ public class AuthController {
                 .secure(true) // true khi deploy HTTPS
                 .sameSite("None")
                 .path("/")
-                .maxAge(60 * 60)
                 .build();
 
         return ResponseEntity.ok()
