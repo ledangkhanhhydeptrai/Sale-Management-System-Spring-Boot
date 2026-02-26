@@ -42,7 +42,7 @@ public class AuthController {
 
     @PostMapping(value = "/login", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<LoginResponse>> login(
-            @ModelAttribute CreateLoginRequest request) {
+            @RequestBody CreateLoginRequest request) {
 
         // 1. Service chỉ trả JWT + user info
         LoginResponse loginResponse = loginService.login(request);
