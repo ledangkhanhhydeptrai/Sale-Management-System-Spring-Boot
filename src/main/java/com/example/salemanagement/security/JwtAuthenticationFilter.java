@@ -42,6 +42,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // 1️⃣ Check Authorization header trước
         String header = request.getHeader("Authorization");
+        System.out.println("Request URI: " + request.getRequestURI());
+        System.out.println("Authorization header: " + request.getHeader("Authorization"));
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
             token = header.substring(7);
         }
