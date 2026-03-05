@@ -3,6 +3,7 @@ package com.example.salemanagement.controller;
 import com.example.salemanagement.dto.request.CreateProductRequest;
 import com.example.salemanagement.dto.request.UpdateProductRequest;
 import com.example.salemanagement.dto.response.ProductResponse;
+import com.example.salemanagement.dto.response.ProductResponsePublic;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +26,7 @@ public class ProductController {
     }
 
     @GetMapping("/public/product")
-    public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProduct() {
+    public ResponseEntity<ApiResponse<List<ProductResponsePublic>>> getAllProduct() {
         return ResponseEntity.ok(productService.getAllProduct());
     }
 
@@ -48,7 +49,7 @@ public class ProductController {
     }
 
     @GetMapping("/public/product/{id}")
-    public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<ProductResponsePublic>> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
