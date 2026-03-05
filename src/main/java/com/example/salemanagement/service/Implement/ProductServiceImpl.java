@@ -4,10 +4,12 @@ import com.example.salemanagement.Enum.StoreStatus;
 import com.example.salemanagement.dto.request.CreateProductRequest;
 import com.example.salemanagement.dto.request.UpdateProductRequest;
 import com.example.salemanagement.dto.response.ProductResponse;
+import com.example.salemanagement.dto.response.ProductResponsePublic;
 import com.example.salemanagement.entity.Product;
 import com.example.salemanagement.entity.Store;
 import com.example.salemanagement.entity.User;
 import com.example.salemanagement.mapper.ProductMapper.ProductMapper;
+import com.example.salemanagement.mapper.ProductMapper.ProductMapperPublic;
 import com.example.salemanagement.repository.ProductRepository;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.AuthService;
@@ -21,29 +23,31 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final AuthService authService;
+    private final ProductMapperPublic productMapperPublic;
 
-
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, AuthService authService) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, AuthService authService, ProductMapperPublic productMapperPublic) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.authService = authService;
+        this.productMapperPublic = productMapperPublic;
     }
 
     @Override
-    public ApiResponse<List<ProductResponse>> getAllProduct() {
+    public ApiResponse<List<ProductResponsePublic>> getAllProduct() {
 
         List<Product> products = productRepository.findAll();
 
-        List<ProductResponse> responses = products.stream()
-                .map(productMapper::toProductResponse)
+        List<ProductResponsePublic> responses = products.stream()
+                .map(productMapperPublic::toProductResponsePublic)
                 .toList();
 
-        return ApiResponse.<List<ProductResponse>>builder()
+        return ApiResponse.<List<ProductResponsePublic>>builder()
                 .status(200)
                 .message("Get All Product Successfully")
                 .data(responses)
                 .build();
     }
+
     @Override
     public ApiResponse<List<ProductResponse>> getMyProduct() {
         User user = authService.getCurrentUser();
@@ -58,20 +62,22 @@ public class ProductServiceImpl implements ProductService {
                 .data(responses)
                 .build();
     }
+
     @Override
-    public ApiResponse<ProductResponse> getProductById(Long id) {
+    public ApiResponse<ProductResponsePublic> getProductById(Long id) {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product Not Found"));
 
-        ProductResponse productResponse = productMapper.toProductResponse(product);
+        ProductResponsePublic productResponse = productMapperPublic.toProductResponsePublic(product);
 
-        return ApiResponse.<ProductResponse>builder()
+        return ApiResponse.<ProductResponsePublic>builder()
                 .status(200)
                 .message("Get Product By Id Successfully")
                 .data(productResponse)
                 .build();
     }
+
     @Override
     public ApiResponse<ProductResponse> createProduct(CreateProductRequest request) {
         User user = authService.getCurrentUser();
