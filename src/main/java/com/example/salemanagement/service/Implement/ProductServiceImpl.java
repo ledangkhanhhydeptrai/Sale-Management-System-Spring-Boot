@@ -31,6 +31,21 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ApiResponse<List<ProductResponse>> getAllProduct() {
+
+        List<Product> products = productRepository.findAll();
+
+        List<ProductResponse> responses = products.stream()
+                .map(productMapper::toProductResponse)
+                .toList();
+
+        return ApiResponse.<List<ProductResponse>>builder()
+                .status(200)
+                .message("Get All Product Successfully")
+                .data(responses)
+                .build();
+    }
+    @Override
+    public ApiResponse<List<ProductResponse>> getMyProduct() {
         User user = authService.getCurrentUser();
         Store store = user.getStore();
         List<Product> products = productRepository.findByStore(store);
@@ -43,7 +58,20 @@ public class ProductServiceImpl implements ProductService {
                 .data(responses)
                 .build();
     }
+    @Override
+    public ApiResponse<ProductResponse> getProductById(Long id) {
 
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product Not Found"));
+
+        ProductResponse productResponse = productMapper.toProductResponse(product);
+
+        return ApiResponse.<ProductResponse>builder()
+                .status(200)
+                .message("Get Product By Id Successfully")
+                .data(productResponse)
+                .build();
+    }
     @Override
     public ApiResponse<ProductResponse> createProduct(CreateProductRequest request) {
         User user = authService.getCurrentUser();
@@ -74,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ApiResponse<ProductResponse> getProductById(Long id) {
+    public ApiResponse<ProductResponse> getMyProductById(Long id) {
         User user = authService.getCurrentUser();
         Store store = user.getStore();
         Product product = productRepository.findByIdAndStoreId(id, store.getId()).orElseThrow(() -> new RuntimeException("Product Not Found"));

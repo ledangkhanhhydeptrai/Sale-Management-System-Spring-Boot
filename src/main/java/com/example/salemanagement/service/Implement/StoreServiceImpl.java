@@ -29,7 +29,7 @@ public class StoreServiceImpl implements StoreService {
     private final StoreRepository storeRepository;
     private final StoreMapper storeMapper;
     private final UserRepository userRepository;
-    private final AuthService  authService;
+    private final AuthService authService;
 
     public StoreServiceImpl(StoreRepository storeRepository, StoreMapper storeMapper, UserRepository userRepository, AuthService authService) {
         this.storeRepository = storeRepository;
@@ -44,6 +44,8 @@ public class StoreServiceImpl implements StoreService {
         Map<String, String> errors = new HashMap<>();
         if (request.getName() == null || request.getName().isBlank()) {
             errors.put("storeName", "Tên cửa hàng không được để trống");
+        } else if (storeRepository.existsByName(request.getName())) {
+            errors.put("storeName", "Tên cửa hàng này đã tồn tại");
         }
 
         if (!errors.isEmpty()) {

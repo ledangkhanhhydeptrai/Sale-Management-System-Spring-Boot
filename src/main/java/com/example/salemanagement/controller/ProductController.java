@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping("/api")
 @Tag(name = "Product")
 public class ProductController {
     private final ProductService productService;
@@ -24,9 +24,21 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
+    @GetMapping("/public/product")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProduct() {
         return ResponseEntity.ok(productService.getAllProduct());
+    }
+
+    @GetMapping("/product/customer")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllCustomer() {
+        return ResponseEntity.ok(productService.getMyProduct());
+    }
+
+    @GetMapping("/product/customer/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ApiResponse<ProductResponse>> getMyCustomer(Long id) {
+        return ResponseEntity.ok(productService.getMyProductById(id));
     }
 
     @PostMapping("/create")
@@ -35,13 +47,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.createProduct(request));
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get product by id (current store)")
+    @GetMapping("/public/product/{id}")
     public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<ProductResponse>> updateProductById(@PathVariable Long id, @ModelAttribute @RequestBody UpdateProductRequest request) {
         return ResponseEntity.ok(productService.updateProductById(id, request));
     }
