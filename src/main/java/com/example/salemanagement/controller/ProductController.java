@@ -48,7 +48,6 @@ public class ProductController {
     }
 
     @GetMapping("/public/product/{id}")
-    @Operation(summary = "Get product by id (current store)")
     public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
