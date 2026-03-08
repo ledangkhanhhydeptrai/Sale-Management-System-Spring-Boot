@@ -44,7 +44,6 @@ public class RegisterServiceImpl implements RegisterService {
         Map<String, String> errors = new HashMap<>();
 
         String email = request.getEmail() == null ? null : request.getEmail().trim().toLowerCase();
-        String username = request.getName() == null ? null : request.getName().trim().toLowerCase();
         MultipartFile file = request.getFile();
 
         // ===== Validate email =====
@@ -55,9 +54,9 @@ public class RegisterServiceImpl implements RegisterService {
         }
 
         // ===== Validate username =====
-        if (username == null || username.isBlank() || username.equals("string")) {
+        if (request.getName() == null || request.getName().isBlank() || request.getName().equals("string")) {
             errors.put("name", "Tên người dùng không được để trống");
-        } else if (userRepository.existsByName(username)) {
+        } else if (userRepository.existsByName(request.getName())) {
             errors.put("name", "Tên người dùng đã tồn tại");
         }
 
@@ -80,7 +79,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         // ===== User =====
         User user = new User();
-        user.setName(username);
+        user.setName(request.getName());
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(UserStatus.ACTIVE);
