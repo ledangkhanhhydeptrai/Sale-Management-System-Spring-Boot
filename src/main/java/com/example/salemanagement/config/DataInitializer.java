@@ -3,6 +3,7 @@ package com.example.salemanagement.config;
 import com.example.salemanagement.Enum.PlanType;
 import com.example.salemanagement.Enum.StoreStatus;
 import com.example.salemanagement.Enum.UserRole;
+import com.example.salemanagement.Enum.UserStatus;
 import com.example.salemanagement.entity.Role;
 import com.example.salemanagement.entity.Store;
 import com.example.salemanagement.entity.User;
@@ -53,6 +54,8 @@ public class DataInitializer implements CommandLineRunner {
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .role(adminRole)
+                    .status(UserStatus.ACTIVE)
+                    .image("https://res.cloudinary.com/dnmk3xqy0/image/upload/v1772962029/images_ogtcvo.jpg")
                     .store(store)
                     .build();
 
@@ -66,6 +69,8 @@ public class DataInitializer implements CommandLineRunner {
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .role(staffRole)
+                    .status(UserStatus.ACTIVE)
+                    .image("https://res.cloudinary.com/dnmk3xqy0/image/upload/v1772962072/images_1_eamypy.jpg")
                     .store(store)
                     .build();
 
@@ -79,6 +84,8 @@ public class DataInitializer implements CommandLineRunner {
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
                     .role(wareHouseRole)
+                    .status(UserStatus.ACTIVE)
+                    .image("https://res.cloudinary.com/dnmk3xqy0/image/upload/v1772962107/360_F_461055011_7loYFoVN9ZnpZRCRJnoFgusfVMWacC4M_kb8o6f.jpg")
                     .store(store)
                     .build();
 

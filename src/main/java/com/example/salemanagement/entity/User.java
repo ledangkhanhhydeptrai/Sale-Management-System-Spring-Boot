@@ -42,6 +42,7 @@ public class User {
     @Column(name = "image")
     private String image;
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private UserStatus status;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "store_id", nullable = true)
