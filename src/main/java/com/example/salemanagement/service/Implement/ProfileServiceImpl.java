@@ -20,6 +20,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public ApiResponse<UserResponse> getMyProfile() {
+        long start = System.currentTimeMillis();
+        System.out.println("Time: " + (System.currentTimeMillis() - start));
         User user = authService.getCurrentUser();
         UserResponse response = userMapper.userToResponse(user);
         return ApiResponse.<UserResponse>builder()
