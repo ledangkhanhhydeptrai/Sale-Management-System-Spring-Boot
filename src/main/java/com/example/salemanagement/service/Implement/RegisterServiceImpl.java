@@ -1,6 +1,7 @@
 package com.example.salemanagement.service.Implement;
 
 import com.example.salemanagement.Enum.UserRole;
+import com.example.salemanagement.Enum.UserStatus;
 import com.example.salemanagement.dto.request.CreateRegisterRequest;
 import com.example.salemanagement.entity.Role;
 import com.example.salemanagement.entity.Store;
@@ -82,6 +83,7 @@ public class RegisterServiceImpl implements RegisterService {
         user.setName(username);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setStatus(UserStatus.ACTIVE);
         user.setRole(role);
 
         // ===== Upload image =====

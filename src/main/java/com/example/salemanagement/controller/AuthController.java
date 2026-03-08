@@ -7,6 +7,8 @@ import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.LoginService;
 import com.example.salemanagement.service.Interface.RegisterService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -62,5 +64,22 @@ public class AuthController {
                         .message("Đăng nhập thành công")
                         .data(loginResponse)
                         .build());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletResponse response) {
+
+        Cookie cookie = new Cookie("access_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // xóa cookie
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .status(200)
+                .message("Logout thành công")
+                .data(null)
+                .build());
     }
 }

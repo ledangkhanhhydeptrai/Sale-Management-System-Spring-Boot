@@ -63,20 +63,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 && jwtUtil.validateToken(token)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            String email = jwtUtil.getUsernameFromToken(token);
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(email);
+            try {
 
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
+                String email = jwtUtil.getUsernameFromToken(token);
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(email);
+
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+            } catch (Exception e) {
+                // user không tồn tại hoặc token lỗi → bỏ qua
+                System.out.println("JWT Authentication error: " + e.getMessage());
+            }
         }
-
         filterChain.doFilter(request, response);
     }
 }

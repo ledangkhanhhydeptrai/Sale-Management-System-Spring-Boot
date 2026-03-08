@@ -75,7 +75,7 @@ public class StoreServiceImpl implements StoreService {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
 
         Store store = user.getStore();

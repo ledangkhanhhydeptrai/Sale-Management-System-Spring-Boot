@@ -19,7 +19,7 @@ public class AuthServiceImpl implements AuthService {
     public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        return userRepository.findByUsername(username)
+        return userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("Username not found"));
     }
 }
