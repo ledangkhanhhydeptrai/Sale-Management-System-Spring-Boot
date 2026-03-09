@@ -35,6 +35,8 @@ public class LoginServiceImpl implements LoginService {
         return LoginResponse.builder()
                 .role(user.getRole().getName())
                 .token(jwt)
+                .name(user.getName())          // thêm
+                .imageUrl(user.getImage())  // thêm
                 .build();
     }
 }
