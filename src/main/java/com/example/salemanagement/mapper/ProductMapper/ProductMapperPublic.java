@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductMapperPublic {
     public ProductResponsePublic toProductResponsePublic(Product product) {
-        if(product == null) {
+        if (product == null) {
             return null;
         }
         return ProductResponsePublic.builder()
@@ -15,6 +15,7 @@ public class ProductMapperPublic {
                 .name(product.getName())
                 .createdAt(product.getCreatedAt())
                 .price(product.getPrice())
+                .images(product.getImages())
                 .build();
     }
 }

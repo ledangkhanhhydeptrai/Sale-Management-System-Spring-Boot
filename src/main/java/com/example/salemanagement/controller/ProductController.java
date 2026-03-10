@@ -6,7 +6,6 @@ import com.example.salemanagement.dto.response.ProductResponse;
 import com.example.salemanagement.dto.response.ProductResponsePublic;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.ProductService;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,9 +41,9 @@ public class ProductController {
         return ResponseEntity.ok(productService.getMyProductById(id));
     }
 
-    @PostMapping("/create")
+    @PostMapping(value = "/create/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<ApiResponse<ProductResponse>> createProduct(@RequestBody CreateProductRequest request) {
+    public ResponseEntity<ApiResponse<ProductResponse>> createProduct(@ModelAttribute @RequestBody CreateProductRequest request) {
         return ResponseEntity.ok(productService.createProduct(request));
     }
 
