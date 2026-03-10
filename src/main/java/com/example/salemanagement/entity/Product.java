@@ -30,7 +30,8 @@ public class Product {
     private ProductStatus status;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
+    @Column(name = "images")
+    private String images;
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

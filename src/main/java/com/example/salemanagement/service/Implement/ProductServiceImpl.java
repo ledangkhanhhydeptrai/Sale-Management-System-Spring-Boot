@@ -13,8 +13,10 @@ import com.example.salemanagement.mapper.ProductMapper.ProductMapperPublic;
 import com.example.salemanagement.repository.ProductRepository;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.AuthService;
+import com.example.salemanagement.service.Interface.CloudinaryService;
 import com.example.salemanagement.service.Interface.ProductService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,12 +26,14 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final AuthService authService;
     private final ProductMapperPublic productMapperPublic;
+    private final CloudinaryService cloudinaryService;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, AuthService authService, ProductMapperPublic productMapperPublic) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, AuthService authService, ProductMapperPublic productMapperPublic, CloudinaryService cloudinaryService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.authService = authService;
         this.productMapperPublic = productMapperPublic;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @Override
@@ -82,12 +86,22 @@ public class ProductServiceImpl implements ProductService {
     public ApiResponse<ProductResponse> createProduct(CreateProductRequest request) {
         User user = authService.getCurrentUser();
         Store store = user.getStore();
+        MultipartFile file = request.getFile();
         ProductResponse productResponse = null;
         if (store.getStatus() == StoreStatus.ACTIVE) {
             Product product = new Product();
             product.setName(request.getProductName());
             product.setPrice(request.getPrice());
             product.setStore(store);
+            try {
+                if (file != null && !file.isEmpty()) {
+                    String images = cloudinaryService.uploadFile(file);
+                    product.setImages(images);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Upload File Error");
+            }
             Product savedProduct = productRepository.save(product);
             productResponse = ProductResponse.builder()
                     .id(savedProduct.getId())
@@ -95,6 +109,7 @@ public class ProductServiceImpl implements ProductService {
                     .price(savedProduct.getPrice())
                     .storeId(savedProduct.getStore().getId())
                     .status(savedProduct.getStatus())
+                    .images(savedProduct.getImages())
                     .createdAt(savedProduct.getCreatedAt())
                     .build();
         } else {
