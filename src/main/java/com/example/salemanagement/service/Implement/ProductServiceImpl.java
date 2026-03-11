@@ -15,6 +15,7 @@ import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.AuthService;
 import com.example.salemanagement.service.Interface.CloudinaryService;
 import com.example.salemanagement.service.Interface.ProductService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +40,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ApiResponse<List<ProductResponsePublic>> getAllProduct() {
 
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
 
         List<ProductResponsePublic> responses = products.stream()
                 .map(productMapperPublic::toProductResponsePublic)
@@ -56,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     public ApiResponse<List<ProductResponse>> getMyProduct() {
         User user = authService.getCurrentUser();
         Store store = user.getStore();
-        List<Product> products = productRepository.findByStore(store);
+        List<Product> products = productRepository.findByStore(store, Sort.by(Sort.Direction.ASC, "id"));
         List<ProductResponse> responses = products.stream()
                 .map(productMapper::toProductResponse)
                 .toList();
@@ -126,7 +127,8 @@ public class ProductServiceImpl implements ProductService {
     public ApiResponse<ProductResponse> getMyProductById(Long id) {
         User user = authService.getCurrentUser();
         Store store = user.getStore();
-        Product product = productRepository.findByIdAndStoreId(id, store.getId()).orElseThrow(() -> new RuntimeException("Product Not Found"));
+        Product product = productRepository.findByIdAndStoreId(id, store.getId())
+                .orElseThrow(() -> new RuntimeException("Product Not Found"));
         ProductResponse productResponse = productMapper.toProductResponse(product);
         return ApiResponse.<ProductResponse>builder()
                 .status(200)

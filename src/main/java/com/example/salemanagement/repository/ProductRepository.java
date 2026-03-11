@@ -2,6 +2,7 @@ package com.example.salemanagement.repository;
 
 import com.example.salemanagement.entity.Product;
 import com.example.salemanagement.entity.Store;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findByStore(Store store);
+    List<Product> findByStore(Store store, Sort sort);
 
     Optional<Product> findByIdAndStoreId(Long id, Long storeId);
 }
