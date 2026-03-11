@@ -52,7 +52,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/product/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<ProductResponse>> updateProductById(@PathVariable Long id, @ModelAttribute @RequestBody UpdateProductRequest request) {
         return ResponseEntity.ok(productService.updateProductById(id, request));
