@@ -37,7 +37,7 @@ public class ProductController {
 
     @GetMapping("/product/customer/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<ApiResponse<ProductResponse>> getMyCustomer(Long id) {
+    public ResponseEntity<ApiResponse<ProductResponse>> getMyCustomer(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getMyProductById(id));
     }
 
