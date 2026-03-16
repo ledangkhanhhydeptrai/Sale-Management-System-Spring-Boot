@@ -10,4 +10,5 @@ public interface StoreService {
     ApiResponse<StoreResponse> createStore(CreateStoreRequest request);
     ApiResponse<StoreResponse> getMyStore();
     ApiResponse<StoreResponse> updateStoreStatus(Long storeId, UpdateStoreRequest request);
+    Store getStoreById(Long id);
 }

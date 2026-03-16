@@ -1,11 +1,14 @@
 package com.example.salemanagement.entity;
 
+import com.example.salemanagement.Enum.WareHouseRequestStatus;
 import com.example.salemanagement.Enum.WareHouseStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "warehouses")
@@ -42,5 +45,12 @@ public class Warehouse {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private WareHouseStatus status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ware_house_status")
+    private WareHouseRequestStatus wareHouseRequestStatus;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
 

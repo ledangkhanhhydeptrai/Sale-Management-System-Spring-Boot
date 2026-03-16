@@ -8,5 +8,4 @@ import lombok.Data;
 @Builder
 public class UpdateStoreRequest {
     private StoreStatus storeStatus;
-    private String storeName;
 }

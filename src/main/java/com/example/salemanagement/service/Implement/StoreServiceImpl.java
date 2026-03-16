@@ -95,7 +95,6 @@ public class StoreServiceImpl implements StoreService {
     public ApiResponse<StoreResponse> updateStoreStatus(Long storeId, UpdateStoreRequest request) {
         Store store = storeRepository.findById(storeId).orElseThrow(() -> new RuntimeException("STORE_NOT_FOUND"));
         store.setStatus(request.getStoreStatus());
-        store.setName(request.getStoreName());
         Store updatedStore = storeRepository.save(store);
         StoreResponse storeResponse = StoreResponse.builder()
                 .id(updatedStore.getId())
@@ -111,5 +110,10 @@ public class StoreServiceImpl implements StoreService {
                 .message("Cập nhật store thành công")
                 .data(storeResponse)
                 .build();
+    }
+    @Override
+    public Store getStoreById(Long id) {
+        return storeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("STORE_NOT_FOUND"));
     }
 }
