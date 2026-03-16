@@ -1,9 +1,11 @@
 package com.example.salemanagement.service.Implement;
 
 import com.example.salemanagement.Enum.UserRole;
+import com.example.salemanagement.Enum.WareHouseRequestStatus;
 import com.example.salemanagement.Enum.WareHouseStatus;
 import com.example.salemanagement.dto.request.CreateWareHouseRequest;
 import com.example.salemanagement.dto.request.UpdateWareHouseRequest;
+import com.example.salemanagement.dto.request.UpdateWareHouseRequestAdmin;
 import com.example.salemanagement.dto.response.WareHouseResponse;
 import com.example.salemanagement.entity.Store;
 import com.example.salemanagement.entity.User;
@@ -16,6 +18,7 @@ import com.example.salemanagement.service.Interface.AuthService;
 import com.example.salemanagement.service.Interface.WareHouseService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -103,7 +106,10 @@ public class WareHouseServiceImpl implements WareHouseService {
         warehouse.setDistrict(request.getDistrict());
         warehouse.setAddress(request.getAddress());
         warehouse.setStore(store);
-        warehouse.setStatus(WareHouseStatus.ACTIVE);
+        warehouse.setCreatedAt(LocalDateTime.now());
+        warehouse.setUpdatedAt(LocalDateTime.now());
+        warehouse.setStatus(WareHouseStatus.INACTIVE);
+        warehouse.setWareHouseRequestStatus(WareHouseRequestStatus.PENDING);
         Warehouse savedWarehouse = wareHouseRepository.save(warehouse);
 
         return ApiResponse.<WareHouseResponse>builder()
@@ -137,6 +143,7 @@ public class WareHouseServiceImpl implements WareHouseService {
         warehouse.setCity(request.getCity());
         warehouse.setDistrict(request.getDistrict());
         warehouse.setAddress(request.getAddress());
+        warehouse.setWareHouseRequestStatus(WareHouseRequestStatus.PENDING);
         Warehouse savedWarehouse = wareHouseRepository.save(warehouse);
         WareHouseResponse wareHouseResponse = wareHouseMapper.toWareHouseResponse(savedWarehouse);
         return ApiResponse.<WareHouseResponse>builder()
@@ -145,6 +152,28 @@ public class WareHouseServiceImpl implements WareHouseService {
                 .data(wareHouseResponse)
                 .build();
     }
+
+    @Override
+    public ApiResponse<WareHouseResponse> updateWareHouseForAdmin(Long id, UpdateWareHouseRequestAdmin request) {
+        User user = authService.getCurrentUser();
+        Warehouse warehouse = wareHouseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("WareHouse not found"));
+        if (!user.getRole().getName().equals(UserRole.ADMIN)) {
+            if (warehouse.getStore().getId().equals(user.getStore().getId())) {
+                throw new RuntimeException("FORBIDDEN");
+            }
+        }
+        warehouse.setWareHouseRequestStatus(request.getStatus());
+        warehouse.setStatus(WareHouseStatus.ACTIVE);
+        Warehouse savedWarehouse = wareHouseRepository.save(warehouse);
+        WareHouseResponse wareHouseResponse = wareHouseMapper.toWareHouseResponse(savedWarehouse);
+        return ApiResponse.<WareHouseResponse>builder()
+                .status(200)
+                .message("Update WareHouse For User Successfully")
+                .data(wareHouseResponse)
+                .build();
+    }
+
     @Override
     public ApiResponse<Void> deleteWarehouse(Long id) {
 

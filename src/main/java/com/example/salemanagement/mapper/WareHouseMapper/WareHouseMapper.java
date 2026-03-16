@@ -5,6 +5,8 @@ import com.example.salemanagement.dto.response.WareHouseResponse;
 import com.example.salemanagement.entity.Warehouse;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class WareHouseMapper {
     public WareHouseResponse toWareHouseResponse(Warehouse warehouse) {
@@ -26,6 +28,10 @@ public class WareHouseMapper {
                         .status(warehouse.getStore().getStatus())
                         .build())
                 .address(warehouse.getAddress())
+                .createdAt(warehouse.getCreatedAt())
+                .updatedAt(warehouse.getUpdatedAt())
+                .wareHouseStatus(warehouse.getStatus())
+                .wareHouseRequestStatus(warehouse.getWareHouseRequestStatus()) // 🔥 thêm dòng này
                 .build();
     }
 }

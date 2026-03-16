@@ -18,9 +18,6 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
     @Column(name = "total_amount", precision = 19, scale = 2)
     private BigDecimal totalAmount;
     @Column(name = "created_at")
