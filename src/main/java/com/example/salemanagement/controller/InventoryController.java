@@ -17,6 +17,7 @@ import java.util.List;
 @RequestMapping("/api/inventory")
 @Tag(name = "Inventory")
 public class InventoryController {
+
     private final InventoryService inventoryService;
 
     public InventoryController(InventoryService inventoryService) {
@@ -24,13 +25,14 @@ public class InventoryController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<InventoryResponse>>> getAllWareHouse() {
+    public ResponseEntity<ApiResponse<List<InventoryResponse>>> getAllInventory() {
         return ResponseEntity.ok(inventoryService.getAllInventory());
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<InventoryResponse>> createWareHouse(@RequestBody CreateInventoryRequest request) {
+    @PreAuthorize("hasAnyRole('ADMIN','WAREHOUSE_MANAGER')")
+    public ResponseEntity<ApiResponse<InventoryResponse>> createInventory(
+            @RequestBody CreateInventoryRequest request) {
         return ResponseEntity.ok(inventoryService.createInventory(request));
     }
 
@@ -40,13 +42,16 @@ public class InventoryController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<InventoryResponse>> updateInventoryById(@PathVariable Long id, @ModelAttribute @RequestBody UpdateInventoryRequest request) {
+    @PreAuthorize("hasAnyRole('ADMIN','WAREHOUSE_MANAGER')")
+    public ResponseEntity<ApiResponse<InventoryResponse>> updateInventoryById(
+            @PathVariable Long id,
+            @ModelAttribute UpdateInventoryRequest request) {
+
         return ResponseEntity.ok(inventoryService.updateInventoryById(id, request));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','WAREHOUSE_MANAGER')")
     public ResponseEntity<ApiResponse<Void>> deleteInventoryById(@PathVariable Long id) {
         return ResponseEntity.ok(inventoryService.deleteInventoryById(id));
     }
