@@ -1,6 +1,5 @@
 package com.example.salemanagement.service.Implement;
 
-import com.example.salemanagement.Enum.InventoryStatus;
 import com.example.salemanagement.dto.request.CreateInventoryRequest;
 import com.example.salemanagement.dto.request.UpdateInventoryRequest;
 import com.example.salemanagement.dto.response.InventoryResponse;
@@ -67,6 +66,8 @@ public class InventoryServiceImpl implements InventoryService {
             inventory.setWarehouse(warehouse);
             inventory.setProduct(product);
             inventory.setQuantity(request.getQuantity());
+            inventory.setCreatedAt(LocalDateTime.now());
+            inventory.setUpdatedAt(LocalDateTime.now());
         }
         Inventory savedInventory = inventoryRepository.save(inventory);
         InventoryResponse inventoryResponse = inventoryMapper.toInventoryResponse(savedInventory);
@@ -79,7 +80,8 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public ApiResponse<InventoryResponse> getInventoryById(Long id) {
-        Inventory inventory = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Inventory Not Found"));
+        Inventory inventory = inventoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Inventory Not Found"));
         InventoryResponse inventoryResponse = inventoryMapper.toInventoryResponse(inventory);
         return ApiResponse.<InventoryResponse>builder()
                 .status(200)
@@ -90,7 +92,8 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public ApiResponse<InventoryResponse> updateInventoryById(Long id, UpdateInventoryRequest request) {
-        Inventory inventory = inventoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Inventory Not Found"));
+        Inventory inventory = inventoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Inventory Not Found"));
         inventory.setQuantity(request.getQuantity());
         inventory.setStatus(request.getStatus());
         Inventory savedInventory = inventoryRepository.save(inventory);
