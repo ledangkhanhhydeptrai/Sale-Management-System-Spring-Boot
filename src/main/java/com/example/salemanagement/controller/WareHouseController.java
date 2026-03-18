@@ -39,6 +39,7 @@ public class WareHouseController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<WareHouseResponse>> getWareHouseById(@PathVariable Long id) {
         return ResponseEntity.ok(wareHouseService.getWareHouseById(id));
     }
