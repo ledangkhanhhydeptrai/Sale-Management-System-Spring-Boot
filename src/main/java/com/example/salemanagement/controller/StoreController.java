@@ -31,6 +31,7 @@ public class StoreController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<StoreResponse>> createStore(@RequestBody CreateStoreRequest request) {
         return ResponseEntity.ok(storeService.createStore(request));
     }
