@@ -27,7 +27,7 @@ public class WareHouseController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ADMIN','CUSTOMER')")
     public ResponseEntity<ApiResponse<List<WareHouseResponse>>> getAllWareHouse() {
         return ResponseEntity.ok(wareHouseService.getAllWareHouse());
     }
@@ -39,7 +39,7 @@ public class WareHouseController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('ADMIN','CUSTOMER')")
     public ResponseEntity<ApiResponse<WareHouseResponse>> getWareHouseById(@PathVariable Long id) {
         return ResponseEntity.ok(wareHouseService.getWareHouseById(id));
     }

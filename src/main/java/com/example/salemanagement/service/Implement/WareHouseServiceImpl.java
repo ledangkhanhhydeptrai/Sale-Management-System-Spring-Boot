@@ -52,12 +52,10 @@ public class WareHouseServiceImpl implements WareHouseService {
 
         List<Warehouse> warehouses;
 
-        if (user.getStore() == null) {
+        if (user.getRole().getName().equals(UserRole.ADMIN)) {
             warehouses = wareHouseRepository.findAll();
-            System.out.println("Fetching ALL warehouses");
         } else {
             warehouses = wareHouseRepository.findByStoreId(user.getStore().getId());
-            System.out.println("Fetching warehouses by storeId");
         }
 
         System.out.println("Warehouses size: " + warehouses.size());
