@@ -10,6 +10,11 @@ public class BadRequestException extends RuntimeException {
         this.errors = errors;
     }
 
+    public BadRequestException(String message) {
+        super(message);
+        this.errors = null;
+    }
+
     public Map<String, String> getErrors() {
         return errors;
     }
