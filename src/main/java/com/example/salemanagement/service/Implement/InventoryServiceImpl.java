@@ -6,19 +6,22 @@ import com.example.salemanagement.dto.response.InventoryResponse;
 import com.example.salemanagement.entity.Inventory;
 import com.example.salemanagement.entity.Product;
 import com.example.salemanagement.entity.Warehouse;
+import com.example.salemanagement.exception.BadRequestException;
 import com.example.salemanagement.mapper.InventoryMapper.InventoryMapper;
 import com.example.salemanagement.repository.InventoryRepository;
 import com.example.salemanagement.repository.ProductRepository;
 import com.example.salemanagement.repository.WareHouseRepository;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.InventoryService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
+@Slf4j
 @Service
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryMapper inventoryMapper;
@@ -52,30 +55,46 @@ public class InventoryServiceImpl implements InventoryService {
     @Override
     @Transactional
     public ApiResponse<InventoryResponse> createInventory(CreateInventoryRequest request) {
+
         Warehouse warehouse = wareHouseRepository.findById(request.getWarehouseId())
                 .orElseThrow(() -> new RuntimeException("Warehouse Not Found"));
+
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product Not Found"));
-        Optional<Inventory> exists = inventoryRepository.findByWarehouseIdAndProductId(warehouse.getId(), product.getId());
-        Inventory inventory;
-        if (exists.isPresent()) {
-            inventory = exists.get();
-            inventory.setQuantity(inventory.getQuantity() + request.getQuantity());
-        } else {
-            inventory = new Inventory();
+
+        try {
+
+            Inventory inventory = new Inventory();
             inventory.setWarehouse(warehouse);
             inventory.setProduct(product);
             inventory.setQuantity(request.getQuantity());
             inventory.setCreatedAt(LocalDateTime.now());
             inventory.setUpdatedAt(LocalDateTime.now());
+
+            Inventory savedInventory = inventoryRepository.save(inventory);
+
+            InventoryResponse inventoryResponse =
+                    inventoryMapper.toInventoryResponse(savedInventory);
+
+            return ApiResponse.<InventoryResponse>builder()
+                    .status(200)
+                    .message("Create Inventory Successfully")
+                    .data(inventoryResponse)
+                    .build();
+
+        } catch (DataIntegrityViolationException ex) {
+
+            String rootMessage = ex.getRootCause() != null
+                    ? ex.getRootCause().getMessage()
+                    : ex.getMessage();
+
+            // 🎯 chỉ bắt lỗi product
+            if (rootMessage != null && rootMessage.contains("product_id")) {
+                throw new BadRequestException("Product này đã tồn tại");
+            }
+
+            throw ex;
         }
-        Inventory savedInventory = inventoryRepository.save(inventory);
-        InventoryResponse inventoryResponse = inventoryMapper.toInventoryResponse(savedInventory);
-        return ApiResponse.<InventoryResponse>builder()
-                .status(200)
-                .message("Create Inventory Successfully")
-                .data(inventoryResponse)
-                .build();
     }
 
     @Override
