@@ -41,26 +41,20 @@ public class WareHouseServiceImpl implements WareHouseService {
 
         User user = authService.getCurrentUser();
 
-        System.out.println("===== DEBUG START =====");
-        System.out.println("Current user: " + user);
+        Store store;
 
-        if (user != null && user.getStore() != null) {
-            System.out.println("User Store ID: " + user.getStore().getId());
-        } else {
-            System.out.println("User is SUPER_ADMIN or store is null");
-        }
+        // 👉 lấy store đầu tiên (tạm fix)
+        store = user.getStores().stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("NO_STORE"));
 
         List<Warehouse> warehouses;
 
         if (user.getRole().getName().equals(UserRole.ADMIN)) {
             warehouses = wareHouseRepository.findAll();
         } else {
-            warehouses = wareHouseRepository.findByStoreId(user.getStore().getId());
+            warehouses = wareHouseRepository.findByStoreId(store.getId());
         }
-
-        System.out.println("Warehouses size: " + warehouses.size());
-        System.out.println("Warehouses data: " + warehouses);
-        System.out.println("===== DEBUG END =====");
 
         List<WareHouseResponse> responses = warehouses.stream()
                 .map(wareHouseMapper::toWareHouseResponse)
@@ -77,13 +71,9 @@ public class WareHouseServiceImpl implements WareHouseService {
     public ApiResponse<WareHouseResponse> createWareHouse(CreateWareHouseRequest request) {
 
         User user = authService.getCurrentUser();
+
         Store store;
-        System.out.println("===== CREATE DEBUG =====");
-        System.out.println("EMAIL FROM TOKEN = " + user.getEmail());
-        System.out.println("USER ID = " + user.getId());
-        System.out.println("STORE ID FROM TOKEN = " + user.getStore().getId());
-        System.out.println("===== CREATE DEBUG END =====");
-        // 🔥 Nếu là ADMIN toàn tổng
+
         if (user.getRole().getName().equals(UserRole.ADMIN)) {
 
             if (request.getStoreId() == null) {
@@ -91,11 +81,13 @@ public class WareHouseServiceImpl implements WareHouseService {
             }
 
             store = storeRepository.findById(request.getStoreId())
-                    .orElseThrow();
+                    .orElseThrow(() -> new RuntimeException("STORE_NOT_FOUND"));
 
         } else {
-            store = storeRepository.findById(user.getStore().getId())
-                    .orElseThrow();
+
+            store = user.getStores().stream()
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("NO_STORE"));
         }
 
         Warehouse warehouse = new Warehouse();
@@ -108,12 +100,13 @@ public class WareHouseServiceImpl implements WareHouseService {
         warehouse.setUpdatedAt(LocalDateTime.now());
         warehouse.setStatus(WareHouseStatus.INACTIVE);
         warehouse.setWareHouseRequestStatus(WareHouseRequestStatus.PENDING);
-        Warehouse savedWarehouse = wareHouseRepository.save(warehouse);
+
+        Warehouse saved = wareHouseRepository.save(warehouse);
 
         return ApiResponse.<WareHouseResponse>builder()
                 .status(200)
                 .message("Create WareHouse Successfully")
-                .data(wareHouseMapper.toWareHouseResponse(savedWarehouse))
+                .data(wareHouseMapper.toWareHouseResponse(saved))
                 .build();
     }
 
@@ -134,7 +127,10 @@ public class WareHouseServiceImpl implements WareHouseService {
         User user = authService.getCurrentUser();
         Warehouse warehouse = wareHouseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("WareHouse not found"));
-        if (!warehouse.getStore().getId().equals(user.getStore().getId())) {
+        Store store = user.getStores().stream()
+                .findFirst()
+                .orElseThrow();
+        if (!warehouse.getStore().getId().equals(store.getId())) {
             throw new RuntimeException("You do not have permission");
         }
         warehouse.setName(request.getName());
@@ -156,8 +152,11 @@ public class WareHouseServiceImpl implements WareHouseService {
         User user = authService.getCurrentUser();
         Warehouse warehouse = wareHouseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("WareHouse not found"));
+        Store store = user.getStores().stream()
+                .findFirst()
+                .orElseThrow();
         if (!user.getRole().getName().equals(UserRole.ADMIN)) {
-            if (warehouse.getStore().getId().equals(user.getStore().getId())) {
+            if (warehouse.getStore().getId().equals(store.getId())) {
                 throw new RuntimeException("FORBIDDEN");
             }
         }
@@ -179,9 +178,11 @@ public class WareHouseServiceImpl implements WareHouseService {
 
         Warehouse warehouse = wareHouseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Warehouse not found"));
-
+        Store store = user.getStores().stream()
+                .findFirst()
+                .orElseThrow();
         // check quyền
-        if (!warehouse.getStore().getId().equals(user.getStore().getId())) {
+        if (!warehouse.getStore().getId().equals(store.getId())) {
             throw new RuntimeException("You do not have permission");
         }
 

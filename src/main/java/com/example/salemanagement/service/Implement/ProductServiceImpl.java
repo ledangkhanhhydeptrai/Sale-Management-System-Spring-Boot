@@ -11,6 +11,7 @@ import com.example.salemanagement.entity.User;
 import com.example.salemanagement.mapper.ProductMapper.ProductMapper;
 import com.example.salemanagement.mapper.ProductMapper.ProductMapperPublic;
 import com.example.salemanagement.repository.ProductRepository;
+import com.example.salemanagement.repository.StoreRepository;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.AuthService;
 import com.example.salemanagement.service.Interface.CloudinaryService;
@@ -23,24 +24,38 @@ import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
-    private final AuthService authService;
     private final ProductMapperPublic productMapperPublic;
+    private final AuthService authService;
     private final CloudinaryService cloudinaryService;
+    private final StoreRepository storeRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper, AuthService authService, ProductMapperPublic productMapperPublic, CloudinaryService cloudinaryService) {
+    public ProductServiceImpl(
+            ProductRepository productRepository,
+            ProductMapper productMapper,
+            ProductMapperPublic productMapperPublic,
+            AuthService authService,
+            CloudinaryService cloudinaryService,
+            StoreRepository storeRepository
+    ) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
-        this.authService = authService;
         this.productMapperPublic = productMapperPublic;
+        this.authService = authService;
         this.cloudinaryService = cloudinaryService;
+        this.storeRepository = storeRepository;
     }
 
+    // =========================
+    // GET ALL PRODUCT (PUBLIC)
+    // =========================
     @Override
     public ApiResponse<List<ProductResponsePublic>> getAllProduct() {
 
-        List<Product> products = productRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+        List<Product> products =
+                productRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
 
         List<ProductResponsePublic> responses = products.stream()
                 .map(productMapperPublic::toProductResponsePublic)
@@ -53,105 +68,141 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
+    // =========================
+    // GET MY PRODUCT
+    // =========================
     @Override
     public ApiResponse<List<ProductResponse>> getMyProduct() {
+
         User user = authService.getCurrentUser();
-        Store store = user.getStore();
-        List<Product> products = productRepository.findByStore(store, Sort.by(Sort.Direction.ASC, "id"));
+
+        List<Store> stores = storeRepository.findByUser_Id(user.getId());
+
+        List<Long> storeIds = stores.stream()
+                .map(Store::getId)
+                .toList();
+
+        List<Product> products =
+                productRepository.findByStore_IdIn(
+                        storeIds,
+                        Sort.by(Sort.Direction.ASC, "id")
+                );
+
         List<ProductResponse> responses = products.stream()
                 .map(productMapper::toProductResponse)
                 .toList();
+
         return ApiResponse.<List<ProductResponse>>builder()
                 .status(200)
-                .message("Get All Product Successfully")
+                .message("Get My Product Successfully")
                 .data(responses)
                 .build();
     }
 
+    // =========================
+    // GET PRODUCT BY ID (PUBLIC)
+    // =========================
     @Override
     public ApiResponse<ProductResponsePublic> getProductById(Long id) {
 
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product Not Found"));
 
-        ProductResponsePublic productResponse = productMapperPublic.toProductResponsePublic(product);
-
         return ApiResponse.<ProductResponsePublic>builder()
                 .status(200)
                 .message("Get Product By Id Successfully")
-                .data(productResponse)
+                .data(productMapperPublic.toProductResponsePublic(product))
                 .build();
     }
 
+    // =========================
+    // CREATE PRODUCT
+    // =========================
     @Override
     public ApiResponse<ProductResponse> createProduct(CreateProductRequest request) {
+
         User user = authService.getCurrentUser();
-        Store store = user.getStore();
+
+        Store store = storeRepository
+                .findByUser_IdAndStatus(user.getId(), StoreStatus.ACTIVE)
+                .orElseThrow(() -> new RuntimeException("ACTIVE_STORE_NOT_FOUND"));
+
         MultipartFile file = request.getFile();
-        ProductResponse productResponse = null;
-        if (store.getStatus() == StoreStatus.ACTIVE) {
-            Product product = new Product();
-            product.setName(request.getProductName());
-            product.setPrice(request.getPrice());
-            product.setStore(store);
-            try {
-                if (file != null && !file.isEmpty()) {
-                    String images = cloudinaryService.uploadFile(file);
-                    product.setImages(images);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("Upload File Error");
+
+        Product product = new Product();
+        product.setName(request.getProductName());
+        product.setPrice(request.getPrice());
+        product.setStore(store);
+
+        try {
+            if (file != null && !file.isEmpty()) {
+                String imageUrl = cloudinaryService.uploadFile(file);
+                product.setImages(imageUrl);
             }
-            Product savedProduct = productRepository.save(product);
-            productResponse = ProductResponse.builder()
-                    .id(savedProduct.getId())
-                    .name(savedProduct.getName())
-                    .price(savedProduct.getPrice())
-                    .storeId(savedProduct.getStore().getId())
-                    .status(savedProduct.getStatus())
-                    .images(savedProduct.getImages())
-                    .createdAt(savedProduct.getCreatedAt())
-                    .build();
-        } else {
-            throw new RuntimeException("Store is not active");
+        } catch (Exception e) {
+            throw new RuntimeException("Upload File Error");
         }
+
+        Product saved = productRepository.save(product);
+
+        ProductResponse response = productMapper.toProductResponse(saved);
+
         return ApiResponse.<ProductResponse>builder()
                 .status(200)
                 .message("Create Product Successfully")
-                .data(productResponse)
+                .data(response)
                 .build();
     }
 
+    // =========================
+    // GET MY PRODUCT BY ID
+    // =========================
     @Override
     public ApiResponse<ProductResponse> getMyProductById(Long id) {
+
         User user = authService.getCurrentUser();
-        Store store = user.getStore();
-        Product product = productRepository.findByIdAndStoreId(id, store.getId())
+
+        Store store = storeRepository
+                .findByUser_IdAndStatus(user.getId(), StoreStatus.ACTIVE)
+                .orElseThrow(() -> new RuntimeException("STORE_NOT_FOUND"));
+
+        Product product = productRepository
+                .findByIdAndStore_Id(id, store.getId())
                 .orElseThrow(() -> new RuntimeException("Product Not Found"));
-        ProductResponse productResponse = productMapper.toProductResponse(product);
+
         return ApiResponse.<ProductResponse>builder()
                 .status(200)
-                .message("Get Product By Id Successfully")
-                .data(productResponse)
+                .message("Get Product Successfully")
+                .data(productMapper.toProductResponse(product))
                 .build();
     }
 
+    // =========================
+    // UPDATE PRODUCT
+    // =========================
     @Override
     public ApiResponse<ProductResponse> updateProductById(Long id, UpdateProductRequest request) {
+
         User user = authService.getCurrentUser();
-        Store store = user.getStore();
-        Product product = productRepository.findByIdAndStoreId(id, store.getId()).orElseThrow(() -> new RuntimeException("Product Not Found"));
+
+        Store store = storeRepository
+                .findByUser_IdAndStatus(user.getId(), StoreStatus.ACTIVE)
+                .orElseThrow(() -> new RuntimeException("STORE_NOT_FOUND"));
+
+        Product product = productRepository
+                .findByIdAndStore_Id(id, store.getId())
+                .orElseThrow(() -> new RuntimeException("Product Not Found"));
+
         product.setName(request.getProductName());
         product.setPrice(request.getPrice());
         product.setStatus(request.getProductStatus());
-        product.setStore(store);
-        Product savedProduct = productRepository.save(product);
-        ProductResponse productResponse = productMapper.toProductResponse(savedProduct);
+
+        Product saved = productRepository.save(product);
+
         return ApiResponse.<ProductResponse>builder()
                 .status(200)
                 .message("Update Product Successfully")
-                .data(productResponse)
+                .data(productMapper.toProductResponse(saved))
                 .build();
     }
 }
