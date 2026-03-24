@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -44,9 +45,8 @@ public class User {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private UserStatus status;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "store_id", nullable = true)
-    private Store store;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    private List<Store> stores;
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
     private Warehouse warehouse;

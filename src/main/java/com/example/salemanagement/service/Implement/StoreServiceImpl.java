@@ -16,12 +16,14 @@ import com.example.salemanagement.security.UserPrincipal;
 import com.example.salemanagement.service.Interface.AuthService;
 import com.example.salemanagement.service.Interface.StoreService;
 import com.example.salemanagement.utils.SlugUtil;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -40,8 +42,11 @@ public class StoreServiceImpl implements StoreService {
 
     @Override
     public ApiResponse<StoreResponse> createStore(CreateStoreRequest request) {
+
         User user = authService.getCurrentUser();
+
         Map<String, String> errors = new HashMap<>();
+
         if (request.getName() == null || request.getName().isBlank()) {
             errors.put("storeName", "Tên cửa hàng không được để trống");
         } else if (storeRepository.existsByName(request.getName())) {
@@ -51,45 +56,65 @@ public class StoreServiceImpl implements StoreService {
         if (!errors.isEmpty()) {
             throw new BadRequestException("Dữ liệu cửa hàng không hợp lệ", errors);
         }
-        String storeCode = SlugUtil.toSlug(request.getName());
+
         Store store = new Store();
-        store.setCode(storeCode);
+        store.setCode(SlugUtil.toSlug(request.getName()));
         store.setName(request.getName());
         store.setStatus(StoreStatus.PENDING);
         store.setPlan(PlanType.FREE);
         store.setCreatedAt(LocalDateTime.now());
         store.setUpdatedAt(LocalDateTime.now());
+
+        // 🔥 QUAN TRỌNG: set user cho store
+        store.setUser(user);
+
         Store savedStore = storeRepository.save(store);
-        user.setStore(savedStore);
-        userRepository.save(user);
-        StoreResponse response = storeMapper.storeToStoreResponse(savedStore);
+
         return ApiResponse.<StoreResponse>builder()
                 .status(200)
                 .message("Create Store Successfully")
-                .data(response)
+                .data(storeMapper.storeToStoreResponse(savedStore))
                 .build();
     }
 
     @Override
-    public ApiResponse<StoreResponse> getMyStore() {
+    public ApiResponse<List<StoreResponse>> getMyStore() {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         User user = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("USER_NOT_FOUND"));
+        System.out.println("AUTH NAME: " + auth.getName());
+        System.out.println("USER ID: " + user.getId());
+        List<Store> stores = storeRepository.findByUser_Id(user.getId());
 
-        Store store = user.getStore();
-        if (store == null) {
+        if (stores == null) {
             throw new RuntimeException("STORE_NOT_FOUND");
         }
-
-        return ApiResponse.<StoreResponse>builder()
+        List<StoreResponse> response = stores.stream().map(storeMapper::storeToStoreResponse)
+                .toList();
+        return ApiResponse.<List<StoreResponse>>builder()
                 .status(200)
                 .message("Lấy store thành công")
-                .data(storeMapper.storeToStoreResponse(store))
+                .data(response)
                 .build();
     }
 
+    @Override
+    public ApiResponse<List<StoreResponse>> getAllStoresForAdmin() {
+
+        List<Store> stores = storeRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+
+        List<StoreResponse> response = stores.stream()
+                .map(storeMapper::storeToStoreResponse)
+                .toList();
+
+        return ApiResponse.<List<StoreResponse>>builder()
+                .status(200)
+                .message("Get all stores success")
+                .data(response)
+                .build();
+    }
 
     @Override
     public ApiResponse<StoreResponse> updateStoreStatus(Long storeId, UpdateStoreRequest request) {
@@ -111,6 +136,7 @@ public class StoreServiceImpl implements StoreService {
                 .data(storeResponse)
                 .build();
     }
+
     @Override
     public Store getStoreById(Long id) {
         return storeRepository.findById(id)

@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/store")
 @Tag(name = "Store")
@@ -26,8 +28,14 @@ public class StoreController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    public ResponseEntity<ApiResponse<StoreResponse>> getMyStore() {
+    public ResponseEntity<ApiResponse<List<StoreResponse>>> getMyStore() {
         return ResponseEntity.ok(storeService.getMyStore());
+    }
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<List<StoreResponse>>> getAllStore() {
+        return ResponseEntity.ok(storeService.getAllStoresForAdmin());
     }
 
     @PostMapping
