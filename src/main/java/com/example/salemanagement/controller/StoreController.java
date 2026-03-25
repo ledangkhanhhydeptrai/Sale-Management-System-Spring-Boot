@@ -6,12 +6,10 @@ import com.example.salemanagement.dto.response.StoreResponse;
 import com.example.salemanagement.response.ApiResponse;
 import com.example.salemanagement.service.Interface.StoreService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

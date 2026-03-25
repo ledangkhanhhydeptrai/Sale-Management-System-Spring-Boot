@@ -15,4 +15,5 @@ public interface WareHouseService {
     ApiResponse<WareHouseResponse> updateWareHouse(Long id, UpdateWareHouseRequest request);
     ApiResponse<Void> deleteWarehouse(Long id);
     ApiResponse<WareHouseResponse> updateWareHouseForAdmin(Long id, UpdateWareHouseRequestAdmin request);
+    ApiResponse<List<WareHouseResponse>> getStoreById(Long storeId);
 }
