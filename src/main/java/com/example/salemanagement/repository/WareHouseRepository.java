@@ -11,4 +11,5 @@ import java.util.List;
 public interface WareHouseRepository extends JpaRepository<Warehouse, Long> {
     List<Warehouse> findByStatus(WareHouseStatus status);
     List<Warehouse> findByStoreId(Long storeId);
+    List<Warehouse> findByStore_Id(Long storeId);
 }

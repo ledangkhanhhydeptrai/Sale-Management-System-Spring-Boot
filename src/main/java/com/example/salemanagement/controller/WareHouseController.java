@@ -43,6 +43,14 @@ public class WareHouseController {
         return ResponseEntity.ok(wareHouseService.getWareHouseById(id));
     }
 
+    @GetMapping("/stores/{storeId}/warehouses")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ApiResponse<List<WareHouseResponse>> getWarehousesByStore(
+            @PathVariable Long storeId
+    ) {
+        return wareHouseService.getStoreById(storeId);
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<WareHouseResponse>> updateWareHouse(@PathVariable Long id, @RequestBody UpdateWareHouseRequest request) {

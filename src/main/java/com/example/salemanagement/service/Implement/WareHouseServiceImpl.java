@@ -68,26 +68,47 @@ public class WareHouseServiceImpl implements WareHouseService {
     }
 
     @Override
+    public ApiResponse<List<WareHouseResponse>> getStoreById(Long storeId) {
+        User user = authService.getCurrentUser();
+        boolean hasStore = user.getStores().stream().anyMatch(store -> store.getId().equals(storeId));
+        if (!hasStore && !user.getRole().getName().equals(UserRole.ADMIN)) {
+            throw new RuntimeException("FORBIDDEN");
+        }
+        List<Warehouse> warehouses;
+        if (user.getRole().getName().equals(UserRole.ADMIN)) {
+            warehouses = wareHouseRepository.findByStoreId(storeId);
+        } else {
+            // user chỉ xem warehouse của store mình chọn
+            warehouses = wareHouseRepository.findByStore_Id(storeId);
+        }
+        List<WareHouseResponse> responses = warehouses.stream()
+                .map(wareHouseMapper::toWareHouseResponse)
+                .toList();
+
+        return ApiResponse.<List<WareHouseResponse>>builder()
+                .status(200)
+                .message("Get Warehouses By Store Success")
+                .data(responses)
+                .build();
+    }
+
+    @Override
     public ApiResponse<WareHouseResponse> createWareHouse(CreateWareHouseRequest request) {
 
         User user = authService.getCurrentUser();
+        if (request.getStoreId() == null) {
+            throw new RuntimeException("STORE_ID_REQUIRED");
+        }
+        Store store = storeRepository.findById(request.getStoreId())
+                .orElseThrow(() -> new RuntimeException("STORE_NOT_FOUND"));
 
-        Store store;
+        if (!user.getRole().getName().equals(UserRole.ADMIN)) {
+            boolean hasStore = user.getStores().stream()
+                    .anyMatch(s -> s.getId().equals(store.getId()));
 
-        if (user.getRole().getName().equals(UserRole.ADMIN)) {
-
-            if (request.getStoreId() == null) {
-                throw new RuntimeException("STORE_ID_REQUIRED");
+            if (!hasStore) {
+                throw new RuntimeException("FORBIDDEN_STORE");
             }
-
-            store = storeRepository.findById(request.getStoreId())
-                    .orElseThrow(() -> new RuntimeException("STORE_NOT_FOUND"));
-
-        } else {
-
-            store = user.getStores().stream()
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("NO_STORE"));
         }
 
         Warehouse warehouse = new Warehouse();
