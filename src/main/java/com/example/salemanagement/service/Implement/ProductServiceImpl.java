@@ -120,15 +120,17 @@ public class ProductServiceImpl implements ProductService {
     // =========================
     @Override
     public ApiResponse<ProductResponse> createProduct(CreateProductRequest request) {
-
         User user = authService.getCurrentUser();
-
         Store store = storeRepository
-                .findByUser_IdAndStatus(user.getId(), StoreStatus.ACTIVE)
+                .findById(request.getStoreId())
                 .orElseThrow(() -> new RuntimeException("ACTIVE_STORE_NOT_FOUND"));
-
+        System.out.println("Current User ID: " + user.getId());
+        System.out.println("Store Owner ID: " + store.getUser().getId());
+        System.out.println("Store ID: " + store.getId());
+        if (!store.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("FORBIDDEN");
+        }
         MultipartFile file = request.getFile();
-
         Product product = new Product();
         product.setName(request.getProductName());
         product.setPrice(request.getPrice());

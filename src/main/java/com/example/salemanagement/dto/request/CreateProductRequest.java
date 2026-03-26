@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 public class CreateProductRequest {
+    private Long storeId;
     private String productName;
     private BigDecimal price;
     private MultipartFile file;
