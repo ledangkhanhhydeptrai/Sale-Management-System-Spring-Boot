@@ -39,22 +39,7 @@ public class WareHouseServiceImpl implements WareHouseService {
     @Override
     public ApiResponse<List<WareHouseResponse>> getAllWareHouse() {
 
-        User user = authService.getCurrentUser();
-
-        Store store;
-
-        // 👉 lấy store đầu tiên (tạm fix)
-        store = user.getStores().stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("NO_STORE"));
-
-        List<Warehouse> warehouses;
-
-        if (user.getRole().getName().equals(UserRole.ADMIN)) {
-            warehouses = wareHouseRepository.findAll();
-        } else {
-            warehouses = wareHouseRepository.findByStoreId(store.getId());
-        }
+        List<Warehouse> warehouses = wareHouseRepository.findAll();
 
         List<WareHouseResponse> responses = warehouses.stream()
                 .map(wareHouseMapper::toWareHouseResponse)
