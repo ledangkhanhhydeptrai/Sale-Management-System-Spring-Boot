@@ -181,20 +181,30 @@ public class WareHouseServiceImpl implements WareHouseService {
     public ApiResponse<Void> deleteWarehouse(Long id) {
 
         User user = authService.getCurrentUser();
+        System.out.println("USER ID = " + user.getId());
 
         Warehouse warehouse = wareHouseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Warehouse not found"));
-        Store store = user.getStores().stream()
-                .findFirst()
-                .orElseThrow();
-        // check quyền
-        if (!warehouse.getStore().getId().equals(store.getId())) {
-            throw new RuntimeException("You do not have permission");
+
+        // 🔥 KHÔNG cho xóa nếu APPROVED
+        if (warehouse.getWareHouseRequestStatus() == WareHouseRequestStatus.APPROVED) {
+            throw new RuntimeException("❌ Cannot delete APPROVED warehouse");
         }
 
-        warehouse.setStatus(WareHouseStatus.INACTIVE);
+        // ✅ check quyền (admin bypass)
+        if (user.getRole().getName() != UserRole.ADMIN) {
 
-        wareHouseRepository.save(warehouse);
+            Store store = user.getStores().stream()
+                    .findFirst()
+                    .orElseThrow();
+
+            if (!warehouse.getStore().getId().equals(store.getId())) {
+                throw new RuntimeException("You do not have permission");
+            }
+        }
+
+        // 🔥 HARD DELETE
+        wareHouseRepository.delete(warehouse);
 
         return ApiResponse.<Void>builder()
                 .status(200)
