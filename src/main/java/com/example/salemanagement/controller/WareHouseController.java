@@ -26,7 +26,6 @@ public class WareHouseController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','CUSTOMER')")
     public ResponseEntity<ApiResponse<List<WareHouseResponse>>> getAllWareHouse() {
         return ResponseEntity.ok(wareHouseService.getAllWareHouse());
     }
