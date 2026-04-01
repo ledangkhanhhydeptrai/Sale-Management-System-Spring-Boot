@@ -1,6 +1,5 @@
 package com.example.salemanagement.dto.response;
 
-import com.example.salemanagement.Enum.ProductStatus;
 import lombok.Builder;
 import lombok.Data;
 
